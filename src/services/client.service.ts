@@ -1,75 +1,39 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, catchError, map, retry } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { from, Observable, of } from 'rxjs';
 import { Client } from '../interfaces/client.interface';
 import { ErrorHandlerService } from './error-handler.service';
-import { environment } from '../environments/environment.development';
+import { collectionData, deleteDoc, doc, Firestore, getDoc } from '@angular/fire/firestore';
+import { addDoc, collection } from '@firebase/firestore';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClientService {
-  constructor(private http: HttpClient, private errorHandler: ErrorHandlerService) {}
+  errorHandler = inject(ErrorHandlerService);
+  firestore = inject(Firestore);
 
-  clients: Client[] = [];
+  clients = collection(this.firestore, 'clients');
 
   getClients(): Observable<Client[]> {
-    return this.http
-      .get<Client[]>(`${environment.apiUrl}/clients`, {
-        withCredentials: true,
-      })
-      .pipe(
-        catchError(this.errorHandler.handleError),
-        map((res) => {
-          this.clients = res;
-          return this.clients;
-        })
-      );
+    return collectionData(this.clients, { idField: 'id' }) as Observable<Client[]>;
   }
 
-  getClient(id: number): Observable<Client> {
-    return this.http
-      .get<Client>(`${environment.apiUrl}/clients/${id}`, {
-        withCredentials: true,
-      })
-      .pipe(catchError(this.errorHandler.handleError));
+  getClient(id: string): Observable<Client> {
+    const docRef = doc(this.firestore, 'clients', id);
+    const promise = getDoc(docRef).then((res) => res.data() as Client);
+    return from(promise);
   }
 
-  postClient(client: Client): Observable<Client> {
-    return this.http
-      .post<Client>(`${environment.apiUrl}/clients`, client, {
-        withCredentials: true,
-      })
-      .pipe(
-        retry(3),
-        catchError(this.errorHandler.handleError),
-        map((res) => {
-          this.clients = [...this.clients, res];
-          return res;
-        })
-      );
+  postClient(client: Client): Observable<string> {
+    const currTime = new Date().toISOString();
+    const clientToCreate = { ...client, createdAt: currTime, updatedAt: currTime };
+    const promise = addDoc(this.clients, clientToCreate).then((res) => res.id);
+    return from(promise);
   }
 
-  patchClient(client: Client): Observable<Client> {
-    return this.http
-      .patch<Client>(`${environment.apiUrl}/clients/${client.id}`, client, {
-        withCredentials: true,
-      })
-      .pipe(
-        retry(3),
-        catchError(this.errorHandler.handleError),
-        map((res) => {
-          this.clients = this.clients.map((c) => (c.id === res.id ? res : c));
-          return res;
-        })
-      );
-  }
-
-  deleteClient(id: number): Observable<any> {
-    return this.http
-      .delete(`${environment.apiUrl}/clients/${id}`, {
-        withCredentials: true,
-      })
-      .pipe(catchError(this.errorHandler.handleError));
+  deleteClient(id: string): Observable<void> {
+    const docRef = doc(this.firestore, 'clients', id);
+    const promise = deleteDoc(docRef);
+    return from(promise);
   }
 }

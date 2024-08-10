@@ -1,38 +1,24 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Client } from '../../../../interfaces/client.interface';
-import { ClientService } from '../../../../services/client.service';
 import { DatePipe } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDividerModule } from '@angular/material/divider';
-import { ConstructOfferComponent } from '../../document-constructors/construct-offer/construct-offer.component';
-import { MatDrawer, MatDrawerContent, MatSidenavModule } from '@angular/material/sidenav';
-import { MatTableModule } from '@angular/material/table';
-import { MatIconModule } from '@angular/material/icon';
-import { StateIconComponent } from '../../../ui/state-icon/state-icon.component';
-import { OffersComponent } from '../../offers/offers.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmationDialogComponent } from '../../../ui/confirmation-dialog/confirmation-dialog.component';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSidenavModule, MatDrawer, MatDrawerContent } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { errorSnackbarConfig, successSnackbarConfig } from '../../../../helpers';
+import { MatTableModule } from '@angular/material/table';
+import { ActivatedRoute, Router } from '@angular/router';
+import { successSnackbarConfig, errorSnackbarConfig } from '../../../../helpers';
+import { Client } from '../../../interfaces/client.interface';
+import { ClientService } from '../../../services/client.service';
+import { ConfirmationDialogComponent } from '../../ui/confirmation-dialog/confirmation-dialog.component';
+import { StateIconComponent } from '../../ui/state-icon/state-icon.component';
 import { ClientEditorComponent } from '../client-editor/client-editor.component';
-import { CertificatesComponent } from '../../certificates/certificates.component';
 
 @Component({
   selector: 'app-client-detail',
   standalone: true,
-  imports: [
-    MatButtonModule,
-    MatDividerModule,
-    ConstructOfferComponent,
-    MatSidenavModule,
-    MatTableModule,
-    MatIconModule,
-    StateIconComponent,
-    OffersComponent,
-    CertificatesComponent,
-    DatePipe,
-  ],
+  imports: [MatButtonModule, MatDividerModule, MatSidenavModule, MatTableModule, MatIconModule, StateIconComponent, DatePipe],
   templateUrl: './client-detail.component.html',
   styleUrl: './client-detail.component.css',
 })
@@ -44,22 +30,18 @@ export class ClientDetailComponent implements OnInit {
     private snackBar: MatSnackBar,
   ) {}
 
-  id!: number;
+  id!: string;
   client!: Client;
   readonly dialog = inject(MatDialog);
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((params) => {
-      this.id = Number(params['id']);
-
-      if (isNaN(this.id)) {
-        this.router.navigate(['/dashboard/clients']);
-        return;
-      }
+      this.id = params['id'];
 
       this.clientService.getClient(this.id).subscribe({
         next: (client) => {
-          this.client = client;
+          this.client = { ...client, id: this.id };
+          console.log(this.client);
         },
         error: () => {
           this.router.navigate(['/dashboard/clients']);

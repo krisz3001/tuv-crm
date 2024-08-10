@@ -3,7 +3,7 @@ import { Contract } from './contract.interface';
 import { Offer } from './offer.interface';
 
 export interface Client {
-  id: number;
+  id: string;
   company: string;
   contact: string;
   offers: Offer[];
@@ -11,5 +11,4 @@ export interface Client {
   certificates: Certificate[];
   createdAt: string;
   updatedAt: string;
-  deletedAt: string | null;
 }

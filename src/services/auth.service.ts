@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Credentials } from '../interfaces/credentials.interface';
-import { Observable, catchError, map, of } from 'rxjs';
+import { Observable, catchError, from, map, of } from 'rxjs';
 import { ErrorHandlerService } from './error-handler.service';
 import { User } from '../interfaces/user.interface';
 import { environment } from '../environments/environment.development';
+import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, user } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -12,83 +13,24 @@ import { environment } from '../environments/environment.development';
 export class AuthService {
   constructor(private http: HttpClient, private errorHandler: ErrorHandlerService) {}
 
-  user: User | null = null;
-  token: string | null = null;
+  firebaseAuth = inject(Auth);
 
-  register(credentials: Credentials): Observable<boolean> {
-    return this.http
-      .post<any>(`${environment.baseUrl}/register`, credentials, {
-        withCredentials: true,
-        observe: 'response',
-      })
-      .pipe(
-        catchError(this.errorHandler.handleError),
-        map((res) => {
-          if (res.headers.has('CSRF')) {
-            this.token = res.headers.get('CSRF') || '';
-            this.user = res.body;
-            return true;
-          }
-          return false;
-        })
-      );
+  user = user(this.firebaseAuth);
+  currentUserSignal = signal<User | null | undefined>(undefined);
+
+  register(credentials: Credentials): Observable<void> {
+    const promise = createUserWithEmailAndPassword(this.firebaseAuth, credentials.email, credentials.password).then((res) =>
+      updateProfile(res.user, { displayName: credentials.fullname })
+    );
+    return from(promise);
   }
 
-  login(credentials: Credentials): Observable<boolean> {
-    return this.http
-      .post<any>(`${environment.baseUrl}/login`, credentials, {
-        withCredentials: true,
-        observe: 'response',
-      })
-      .pipe(
-        catchError(this.errorHandler.handleError),
-        map((res) => {
-          if (res.headers.has('CSRF')) {
-            this.token = res.headers.get('CSRF') || '';
-            this.user = res.body;
-            return true;
-          }
-          return false;
-        })
-      );
+  login(credentials: Credentials): Observable<void> {
+    const promise = signInWithEmailAndPassword(this.firebaseAuth, credentials.email, credentials.password).then(() => {});
+    return from(promise);
   }
 
-  logout(): Observable<boolean> {
-    return this.http
-      .get(`${environment.baseUrl}/logout`, {
-        withCredentials: true,
-        observe: 'response',
-      })
-      .pipe(
-        catchError(this.errorHandler.handleError),
-        map((res) => {
-          if (!res) return false;
-          if (res.status === 200) {
-            this.token = null;
-            this.user = null;
-            return true;
-          }
-          return false;
-        })
-      );
-  }
-
-  getCsrfToken(): Observable<string> {
-    if (typeof this.token === 'string') return of(this.token);
-    return this.http
-      .get<User>(`${environment.baseUrl}/auth`, {
-        withCredentials: true,
-        observe: 'response',
-      })
-      .pipe(
-        catchError(() => of('')),
-        map((res) => {
-          if (typeof res === 'string') return '';
-          if (!res.headers.has('Csrf')) return '';
-          this.token = res.headers.get('Csrf')!;
-          this.user = res.body;
-          return this.token;
-        })
-      );
+  logout(): Observable<void> {
+    return from(signOut(this.firebaseAuth));
   }
 }

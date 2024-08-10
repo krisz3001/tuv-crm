@@ -6,7 +6,9 @@
     <span>{{ path }}</span>
   </div>
   <div class="account-info">
-    <span>Bejelentkezve mint: {{ user.fullname }}</span>
+    @if (user) {
+      <span>Bejelentkezve mint: {{ user.fullname }}</span>
+    }
     <button mat-icon-button aria-label="Logout button" (click)="logout()">
       <mat-icon>logout</mat-icon>
     </button>

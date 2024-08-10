@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ClientEditorComponent } from './client-editor/client-editor.component';
 import { Client } from '../../interfaces/client.interface';
 import { ClientService } from '../../services/client.service';
+import { ConfirmationDialogComponent } from '../ui/confirmation-dialog/confirmation-dialog.component';
 
 registerLocaleData(localeHu, 'hu'); // For displaying correctly with pipes
 
@@ -24,10 +25,14 @@ registerLocaleData(localeHu, 'hu'); // For displaying correctly with pipes
   styleUrl: './clients.component.css',
 })
 export class ClientsComponent implements OnInit {
-  constructor(private clientService: ClientService, private router: Router, private snackBar: MatSnackBar) {}
+  constructor(
+    private clientService: ClientService,
+    private router: Router,
+    private snackBar: MatSnackBar,
+  ) {}
 
   readonly dialog = inject(MatDialog);
-  displayedColumns: string[] = ['company', 'contact', 'createdAt', 'updatedAt'];
+  displayedColumns: string[] = ['company', 'contact', 'createdAt', 'updatedAt', 'actions'];
   clients: Client[] = [];
   isLoadingResults = true;
 
@@ -51,16 +56,9 @@ export class ClientsComponent implements OnInit {
     if (this.dialog.openDialogs.length) {
       return;
     }
-    this.dialog
-      .open(ClientEditorComponent, {
-        width: '350px',
-      })
-      .afterClosed()
-      .subscribe((res) => {
-        if (res) {
-          this.clients = this.clientService.clients;
-        }
-      });
+    this.dialog.open(ClientEditorComponent, {
+      width: '350px',
+    });
   }
 
   // temporary random client generator
@@ -72,7 +70,6 @@ export class ClientsComponent implements OnInit {
       } as Client)
       .subscribe({
         next: () => {
-          this.clients = this.clientService.clients;
           this.snackBar.open('Az ügyfél sikeresen létrehozva!', undefined, successSnackbarConfig);
         },
         error: (error) => {
@@ -96,5 +93,40 @@ export class ClientsComponent implements OnInit {
 
   goClientDetails(id: number): void {
     this.router.navigate(['/dashboard/clients', id]);
+  }
+
+  editClient(event: MouseEvent, id: number): void {
+    event.stopPropagation();
+  }
+
+  deleteClient(event: MouseEvent, id: string): void {
+    event.stopPropagation();
+    if (this.dialog.openDialogs.length) {
+      return;
+    }
+
+    this.dialog
+      .open(ConfirmationDialogComponent, {
+        width: '350px',
+        data: {
+          title: 'Ügyfél törlése',
+          message: 'Biztosan törölni szeretnéd az ügyfelet?',
+          confirm: 'Törlés',
+          confirmColor: 'warn',
+        },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.clientService.deleteClient(id).subscribe({
+            next: () => {
+              this.snackBar.open('Az ügyfél sikeresen törölve!', undefined, successSnackbarConfig);
+            },
+            error: (error) => {
+              this.snackBar.open(error.message, undefined, errorSnackbarConfig);
+            },
+          });
+        }
+      });
   }
 }

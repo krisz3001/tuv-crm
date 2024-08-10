@@ -38,16 +38,23 @@ export class MenubarComponent implements OnInit {
       )
       .subscribe((route) => (this.path = route.snapshot.title || ''));
 
-    this.user = this.authService.user!;
+    this.authService.user.subscribe((user) => {
+      if (user) {
+        this.user = {
+          email: user.email!,
+          fullname: user.displayName!,
+        };
+      } else {
+        this.authService.currentUserSignal.set(null);
+      }
+    });
   }
 
   logout(): void {
     this.authService.logout().subscribe({
-      next: (successful) => {
-        if (successful) {
-          console.log('Logged out');
-          this.router.navigate(['/']);
-        }
+      next: () => {
+        console.log('Logged out');
+        this.router.navigate(['/']);
       },
     });
   }
