@@ -1,0 +1,38 @@
+<mat-drawer-container hasBackdrop="false">
+  <mat-drawer #drawer opened="drawerOpened" mode="side">
+    <mat-nav-list>
+      <mat-list-item routerLink="clients" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>group</mat-icon>
+        <a matListItemTitle>Ügyfelek</a>
+      </mat-list-item>
+      <mat-list-item routerLink="offers" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>article</mat-icon>
+        <a matListItemTitle>Ajánlatok</a>
+      </mat-list-item>
+      <mat-list-item routerLink="contracts" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>receipt_long</mat-icon>
+        <a matListItemTitle>Szerződések</a>
+      </mat-list-item>
+      <mat-list-item routerLink="certificates" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>verified_user</mat-icon>
+        <a matListItemTitle>Tanúsítványok</a>
+      </mat-list-item>
+      <mat-list-item routerLink="experts" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>engineering</mat-icon>
+        <a matListItemTitle>Szakértők</a>
+      </mat-list-item>
+      <mat-list-item routerLink="prices" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>paid</mat-icon>
+        <a matListItemTitle>Árlista</a>
+      </mat-list-item>
+      <mat-list-item routerLink="statistics" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>query_stats</mat-icon>
+        <a matListItemTitle>Statisztika</a>
+      </mat-list-item>
+    </mat-nav-list>
+  </mat-drawer>
+  <mat-drawer-content>
+    <app-menubar [drawer]="drawer"></app-menubar>
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>

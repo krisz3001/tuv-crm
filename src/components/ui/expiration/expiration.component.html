@@ -1,0 +1,19 @@
+@if (expiration < now) {
+  <span class="expired" [matTooltip]="(expiration | date: undefined : undefined : 'hu')!"> Lejárt</span>
+} @else if (expiration - now < 2592000000) {
+  <span class="expiring-30" [matTooltip]="(expiration | date: undefined : undefined : 'hu')!"
+    >{{ (expiration - now) / 1000 / 60 / 60 / 24 | number: ".0-0" }} nap</span
+  >
+} @else if (expiration - now < 5184000000) {
+  <span class="expiring-60" [matTooltip]="(expiration | date: undefined : undefined : 'hu')!"
+    >{{ (expiration - now) / 1000 / 60 / 60 / 24 | number: ".0-0" }} nap</span
+  >
+} @else if (expiration - now < 7776000000) {
+  <span class="expiring-90" [matTooltip]="(expiration | date: undefined : undefined : 'hu')!"
+    >{{ (expiration - now) / 1000 / 60 / 60 / 24 | number: ".0-0" }} nap</span
+  >
+} @else {
+  <span class="valid" [matTooltip]="(expiration | date: undefined : undefined : 'hu')!"
+    >{{ (expiration - now) / 1000 / 60 / 60 / 24 | number: ".0-0" }} nap</span
+  >
+}

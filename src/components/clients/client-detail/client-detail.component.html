@@ -1,0 +1,39 @@
+<mat-drawer-container [hasBackdrop]="false">
+  <mat-drawer #drawer mode="over" position="end" class="offer-drawer">
+    @if (client) {
+      <app-construct-offer [client]="client" [drawer]="drawer"></app-construct-offer>
+    }
+  </mat-drawer>
+  <mat-drawer-content class="details {{ drawer.opened ? 'drawer-open' : '' }}" #drawerContent>
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="toggleDrawer(drawer, drawerContent)"><mat-icon>add</mat-icon>Új ajánlat</button>
+      <button mat-raised-button color="primary" (click)="editClient()"><mat-icon>edit</mat-icon>Ügyfél módosítása</button>
+      <button mat-raised-button color="warn" (click)="deleteClient()"><mat-icon>delete</mat-icon>Ügyfél törlése</button>
+    </div>
+    @if (client) {
+      <table class="table-client-detail {{ drawer.opened ? 'highlight' : '' }}">
+        <tr>
+          <td><strong>Vállalat</strong></td>
+          <td>{{ client.company }}</td>
+        </tr>
+        <tr>
+          <td><strong>Kapcsolattartó</strong></td>
+          <td>{{ client.contact }}</td>
+        </tr>
+        <tr>
+          <td><strong>Létrehozva</strong></td>
+          <td>{{ client.createdAt | date: undefined : undefined : "hu" }}</td>
+        </tr>
+        <tr>
+          <td><strong>Módosítva</strong></td>
+          <td>{{ client.updatedAt | date: undefined : undefined : "hu" }}</td>
+        </tr>
+      </table>
+    }
+    <div class="backdrop {{ drawer.opened ? '' : 'hidden' }}" (click)="drawer.close()"></div>
+    @if (client) {
+      <app-offers mode="client" [client]="client"></app-offers>
+      <app-certificates mode="client" [client]="client"></app-certificates>
+    }
+  </mat-drawer-content>
+</mat-drawer-container>

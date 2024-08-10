@@ -1,0 +1,13 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-red {
+  color: #ea3323;
+}
+
+.icon-green {
+  color: #4caf50;
+}

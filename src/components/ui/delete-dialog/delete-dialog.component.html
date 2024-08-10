@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>Törlés megerősítése</h2>
+<mat-dialog-content>
+  <p>Biztos?</p>
+  <div class="dialog-actions">
+    <button mat-raised-button mat color="warn" [mat-dialog-close]="true">Törlés</button>
+    <button mat-raised-button [mat-dialog-close]="undefined" cdkFocusInitial>Mégsem</button>
+  </div>
+</mat-dialog-content>

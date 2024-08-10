@@ -1,0 +1,7 @@
+@if (state === null) {
+  <mat-icon>pending_actions</mat-icon>
+} @else if (state) {
+  <mat-icon class="icon-green">check_circle</mat-icon>
+} @else {
+  <mat-icon class="icon-red">do_not_disturb_on</mat-icon>
+}

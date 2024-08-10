@@ -1,0 +1,13 @@
+<div class="dropzone" #dropzone dragAndDrop (file)="uploadFile($event)" [style.padding]="file ? '10px' : '30px'">
+  <input type="file" #input (change)="uploadFile(input.files); input.value = ''" [accept]="accept" />
+  @if (file) {
+    <div class="file-preview">
+      <a #linkRef><mat-icon svgIcon="word"></mat-icon>{{ file.name }}</a>
+      <button mat-icon-button class="btn-delete" (click)="resetInput()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  } @else {
+    <span><mat-icon>upload</mat-icon> Drop file or click to browse</span>
+  }
+</div>

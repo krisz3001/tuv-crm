@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>Ügyfél {{ data ? "módosítása" : "felvétele" }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="clientForm" (submit)="handleSubmit()" spellcheck="false">
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label>Vállalat</mat-label>
+      <input matInput formControlName="company" name="company" />
+      @if (company.errors?.["required"]) {
+        <mat-error>Vállalat megadása kötelező</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label>Kapcsolattartó</mat-label>
+      <input matInput formControlName="contact" name="contact" />
+      @if (contact.errors?.["required"]) {
+        <mat-error>Kapcsolattartó megadása kötelező</mat-error>
+      }
+    </mat-form-field>
+    <div class="dialog-actions">
+      <button mat-raised-button color="primary" [disabled]="clientForm.invalid">
+        {{ data ? "Mentés" : "Felvétel" }}
+      </button>
+      <button mat-button [mat-dialog-close]="undefined">Mégsem</button>
+    </div>
+  </form>
+</mat-dialog-content>

@@ -1,0 +1,14 @@
+<mat-toolbar color="primary">
+  <div>
+    <button mat-icon-button aria-label="Menu button" (click)="drawer.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span>{{ path }}</span>
+  </div>
+  <div class="account-info">
+    <span>Bejelentkezve mint: {{ user.fullname }}</span>
+    <button mat-icon-button aria-label="Logout button" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>

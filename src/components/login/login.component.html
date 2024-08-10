@@ -1,0 +1,26 @@
+<form [formGroup]="loginForm" (submit)="login()" (input)="resetError()" spellcheck="false">
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" name="email" autocomplete="email" />
+    @if (email.errors?.["required"]) {
+      <mat-error>{{ messages.ErrEmailRequired }}</mat-error>
+    } @else if (email.errors?.["email"]) {
+      <mat-error>{{ messages.ErrEmailFormat }}</mat-error>
+    }
+  </mat-form-field>
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Jelszó</mat-label>
+    <input type="password" matInput formControlName="password" name="password" autocomplete="new-password" />
+    @if (password.errors?.["required"]) {
+      <mat-error>{{ messages.ErrPasswordRequired }}</mat-error>
+    } @else if (password.errors?.["minlength"]) {
+      <mat-error>{{ messages.ErrPasswordMinLength }}</mat-error>
+    } @else if (password.errors?.["maxlength"]) {
+      <mat-error>{{ messages.ErrPasswordMaxLength }}</mat-error>
+    }
+  </mat-form-field>
+  @if (loginError) {
+    <mat-error>{{ loginError }}</mat-error>
+  }
+  <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">Bejelentkezés</button>
+</form>

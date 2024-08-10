@@ -1,0 +1,43 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #333;
+  border-radius: 5px;
+  width: 90px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 1px 1px 5px #333;
+}
+
+span {
+  width: 100%;
+  text-align: center;
+  padding: 2px;
+  font-weight: bold;
+}
+
+.expired {
+  background-color: rgb(238, 0, 0);
+  color: #fff;
+}
+
+.expiring-30 {
+  background-color: #f90;
+  color: #fff;
+}
+
+.expiring-60 {
+  background-color: #ff0;
+  color: #333;
+}
+
+.expiring-90 {
+  background-color: rgb(149, 255, 0);
+  color: #333;
+}
+
+.valid {
+  background-color: #4caf50;
+  color: #fff;
+}

@@ -1,0 +1,28 @@
+:host {
+  display: flex;
+  flex-grow: 1;
+}
+
+mat-drawer-container {
+  flex-grow: 1;
+}
+
+mat-drawer-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh !important;
+  overflow-y: auto;
+}
+
+mat-drawer {
+  width: 200px;
+  position: fixed;
+}
+
+mat-nav-list {
+  padding: 0;
+}
+
+.active-link {
+  background-color: rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,14 @@
+:host {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+mat-toolbar {
+  justify-content: space-between;
+}
+
+div {
+  display: flex;
+  align-items: center;
+}

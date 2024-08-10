@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+<mat-dialog-content>
+  <p>{{ data.message }}</p>
+  <div class="dialog-actions">
+    <button mat-raised-button mat [color]="data.confirmColor" [mat-dialog-close]="true">{{ data.confirm }}</button>
+    <button mat-raised-button [mat-dialog-close]="undefined" cdkFocusInitial>Mégsem</button>
+  </div>
+</mat-dialog-content>
