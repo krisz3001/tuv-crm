@@ -49,6 +49,8 @@ export class ClientsComponent implements OnInit {
   displayClients(): void {
     this.clientService.getClients(this.limit).subscribe({
       next: (res) => {
+        console.log('Clients:', res.clients);
+
         this.clients = res.clients;
         this.lastDoc = res.clients.length < this.limit ? null : res.lastDoc;
         this.isLoadingResults = false;
@@ -93,6 +95,8 @@ export class ClientsComponent implements OnInit {
 
   // temporary random client generator
   debugCreateClient(): void {
+    console.log('Creating client...');
+
     this.clientService
       .postClient({
         company: 'Példa Kft',
@@ -100,6 +104,8 @@ export class ClientsComponent implements OnInit {
       } as Client)
       .subscribe({
         next: () => {
+          console.log('Client created!');
+
           this.displayClients();
           this.snackBar.open('Az ügyfél sikeresen létrehozva!', undefined, successSnackbarConfig);
         },
@@ -122,7 +128,7 @@ export class ClientsComponent implements OnInit {
     });
   }
 
-  goClientDetails(id: number): void {
+  goClientDetails(id: string): void {
     this.router.navigate(['/dashboard/clients', id]);
   }
 }

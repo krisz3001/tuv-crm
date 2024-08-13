@@ -39,7 +39,7 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="goClientDetails(row.id)"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="goClientDetails(row.firebaseId)"></tr>
   </table>
   @if (lastDoc !== null) {
     <button mat-raised-button color="primary" (click)="loadMore()" class="btn-load">Továbbiak betöltése</button>
