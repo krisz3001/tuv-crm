@@ -5,9 +5,7 @@ export interface Document {
   id: number;
   year: number;
   files: File[];
-  clientID: number;
-  client: Client;
+  clientID: string;
   createdAt: string;
   updatedAt: string;
-  deletedAt: string | null;
 }

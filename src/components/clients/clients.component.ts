@@ -14,6 +14,7 @@ import { ClientEditorComponent } from './client-editor/client-editor.component';
 import { Client } from '../../interfaces/client.interface';
 import { ClientService } from '../../services/client.service';
 import { ConfirmationDialogComponent } from '../ui/confirmation-dialog/confirmation-dialog.component';
+import { QueryDocumentSnapshot } from '@angular/fire/firestore';
 
 registerLocaleData(localeHu, 'hu'); // For displaying correctly with pipes
 
@@ -36,13 +37,36 @@ export class ClientsComponent implements OnInit {
   clients: Client[] = [];
   isLoadingResults = true;
 
+  limit = 10;
+  lastDoc: QueryDocumentSnapshot | null | undefined;
+
   @ViewChild(MatSort)
   sort: MatSort | undefined;
 
   ngOnInit(): void {
-    this.clientService.getClients().subscribe({
-      next: (clients) => {
-        this.clients = clients;
+    this.displayClients();
+  }
+
+  displayClients(): void {
+    this.clientService.getClients(this.limit).subscribe({
+      next: (res) => {
+        this.clients = res.clients;
+        this.lastDoc = res.clients.length < this.limit ? null : res.lastDoc;
+        this.isLoadingResults = false;
+      },
+      error: (error) => {
+        this.snackBar.open(error.message, undefined, errorSnackbarConfig);
+        this.isLoadingResults = false;
+      },
+    });
+  }
+
+  loadMore(): void {
+    this.isLoadingResults = true;
+    this.clientService.getClients(this.limit, this.lastDoc!).subscribe({
+      next: (res) => {
+        this.clients = [...this.clients, ...res.clients];
+        this.lastDoc = res.clients.length < this.limit ? null : res.lastDoc;
         this.isLoadingResults = false;
       },
       error: (error) => {
@@ -56,9 +80,16 @@ export class ClientsComponent implements OnInit {
     if (this.dialog.openDialogs.length) {
       return;
     }
-    this.dialog.open(ClientEditorComponent, {
-      width: '350px',
-    });
+    this.dialog
+      .open(ClientEditorComponent, {
+        width: '350px',
+      })
+      .afterClosed()
+      .subscribe((created) => {
+        if (created) {
+          this.displayClients();
+        }
+      });
   }
 
   // temporary random client generator
@@ -70,6 +101,7 @@ export class ClientsComponent implements OnInit {
       } as Client)
       .subscribe({
         next: () => {
+          this.displayClients();
           this.snackBar.open('Az ügyfél sikeresen létrehozva!', undefined, successSnackbarConfig);
         },
         error: (error) => {
@@ -120,6 +152,7 @@ export class ClientsComponent implements OnInit {
         if (confirmed) {
           this.clientService.deleteClient(id).subscribe({
             next: () => {
+              this.displayClients();
               this.snackBar.open('Az ügyfél sikeresen törölve!', undefined, successSnackbarConfig);
             },
             error: (error) => {

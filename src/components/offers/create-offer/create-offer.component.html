@@ -1,0 +1,25 @@
+<form [formGroup]="offerForm" spellcheck="false" (input)="handleChange()">
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Tárgy</mat-label>
+    <input matInput formControlName="subject" name="subject" />
+    @if (subject.errors?.["required"]) {
+      <mat-error>Tárgy megadása kötelező</mat-error>
+    }
+  </mat-form-field>
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>MS / Tanácsadó</mat-label>
+    <input matInput formControlName="commonAdvisor" name="commonAdvisor" />
+  </mat-form-field>
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Szakértő</mat-label>
+    <input matInput formControlName="expert" name="expert" (input)="filterExperts()" (focus)="filterExperts()" [matAutocomplete]="auto" />
+    <mat-autocomplete #auto="matAutocomplete">
+      @for (option of experts; track option) {
+        <mat-option [value]="option.fullname">{{ option.fullname }}</mat-option>
+      }
+    </mat-autocomplete>
+    @if (expert.errors?.["required"]) {
+      <mat-error>Szakértő megadása kötelező</mat-error>
+    }
+  </mat-form-field>
+</form>

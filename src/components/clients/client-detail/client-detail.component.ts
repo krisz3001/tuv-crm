@@ -14,11 +14,13 @@ import { ClientService } from '../../../services/client.service';
 import { ConfirmationDialogComponent } from '../../ui/confirmation-dialog/confirmation-dialog.component';
 import { StateIconComponent } from '../../ui/state-icon/state-icon.component';
 import { ClientEditorComponent } from '../client-editor/client-editor.component';
+import { OffersComponent } from '../../offers/offers.component';
+import { OfferService } from '../../../services/offer.service';
 
 @Component({
   selector: 'app-client-detail',
   standalone: true,
-  imports: [MatButtonModule, MatDividerModule, MatSidenavModule, MatTableModule, MatIconModule, StateIconComponent, DatePipe],
+  imports: [MatButtonModule, MatDividerModule, MatSidenavModule, MatTableModule, MatIconModule, StateIconComponent, DatePipe, OffersComponent],
   templateUrl: './client-detail.component.html',
   styleUrl: './client-detail.component.css',
 })
@@ -28,6 +30,7 @@ export class ClientDetailComponent implements OnInit {
     private router: Router,
     private clientService: ClientService,
     private snackBar: MatSnackBar,
+    private offerService: OfferService,
   ) {}
 
   id!: string;
@@ -37,11 +40,13 @@ export class ClientDetailComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((params) => {
       this.id = params['id'];
-
       this.clientService.getClient(this.id).subscribe({
         next: (client) => {
-          this.client = { ...client, id: this.id };
-          console.log(this.client);
+          this.offerService.getClientOffers(this.id).subscribe((res) => {
+            console.log(res);
+
+            this.client = { ...client, offers: res };
+          });
         },
         error: () => {
           this.router.navigate(['/dashboard/clients']);

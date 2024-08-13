@@ -22,18 +22,18 @@
         </tr>
         <tr>
           <td><strong>Létrehozva</strong></td>
-          <td>{{ client.createdAt | date: undefined : undefined : "hu" }}</td>
+          <td>{{ client.createdAt.toDate() | date: undefined : undefined : "hu" }}</td>
         </tr>
         <tr>
           <td><strong>Módosítva</strong></td>
-          <td>{{ client.updatedAt | date: undefined : undefined : "hu" }}</td>
+          <td>{{ client.updatedAt.toDate() | date: undefined : undefined : "hu" }}</td>
         </tr>
       </table>
     }
     <div class="backdrop {{ drawer.opened ? '' : 'hidden' }}" (click)="drawer.close()"></div>
     @if (client) {
-      <!-- <app-offers mode="client" [client]="client"></app-offers>
-      <app-certificates mode="client" [client]="client"></app-certificates> -->
+      <app-offers mode="client" [client]="client"></app-offers>
+      <!-- <app-certificates mode="client" [client]="client"></app-certificates> -->
     }
   </mat-drawer-content>
 </mat-drawer-container>

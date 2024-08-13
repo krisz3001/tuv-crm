@@ -39,7 +39,7 @@ export class ClientEditorComponent {
     }
 
     if (this.data) {
-      //this.editClient();
+      this.editClient();
     } else {
       this.createClient();
     }
@@ -57,7 +57,7 @@ export class ClientEditorComponent {
     });
   }
 
-  /* editClient(): void {
+  editClient(): void {
     this.clientService.patchClient({ ...this.data, ...this.clientForm.value } as Client).subscribe({
       next: (client) => {
         this.snackBar.open('Ügyfél sikeresen módosítva!', undefined, successSnackbarConfig);
@@ -67,7 +67,7 @@ export class ClientEditorComponent {
         this.snackBar.open(error.message, undefined, errorSnackbarConfig);
       },
     });
-  } */
+  }
 
   get company() {
     return this.clientForm.get('company')!;

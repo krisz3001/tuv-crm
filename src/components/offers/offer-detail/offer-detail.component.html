@@ -1,0 +1,65 @@
+<mat-drawer-container>
+  <mat-drawer #drawer mode="side" position="end" class="offer-drawer"> todo: construct-contract </mat-drawer>
+  @if (offer) {
+    <mat-drawer-content class="details">
+      <div class="btn-panel">
+        <button mat-raised-button color="primary" (click)="drawer.toggle()" disabled="">Ajánlat szerkesztése</button>
+        @if (!offer.accepted) {
+          <button mat-raised-button color="primary" (click)="acceptOffer()">Ajánlat elfogadása</button>
+        }
+      </div>
+      <table class="table-client-detail">
+        <tr>
+          <td><strong>Sorszám</strong></td>
+          <td>{{ ("" + offer.year | slice: -2) + "/" + (offer.id | number: "3.") }}</td>
+        </tr>
+        <tr>
+          <td><strong>Dátum</strong></td>
+          <td>{{ offer.createdAt | date: undefined : undefined : "hu" }}</td>
+        </tr>
+        <tr>
+          <td><strong>Tárgy</strong></td>
+          <td>{{ offer.subject }}</td>
+        </tr>
+        <tr>
+          <td><strong>MS-sel közös / tanácsadó</strong></td>
+          <td>{{ offer.commonAdvisor }}</td>
+        </tr>
+        <tr>
+          <td><strong>Szakértő</strong></td>
+          <td>{{ offer.expert }}</td>
+        </tr>
+        <tr>
+          <td><strong>Ajánlati összeg (Ft)</strong></td>
+          <td>{{ offer.price | currency: "HUF" : "symbol-narrow" : "1.0" : "hu-HU" }}</td>
+        </tr>
+        <tr>
+          <td><strong>Elfogadva</strong></td>
+          <td><app-state-icon [state]="offer.accepted"></app-state-icon></td>
+        </tr>
+        <tr>
+          <td><strong>Szerződés</strong></td>
+          <td><app-state-icon [state]="!!offer.contract"></app-state-icon></td>
+        </tr>
+        <tr>
+          <td><strong>Módosítva</strong></td>
+          <td>{{ offer.updatedAt | date: undefined : undefined : "hu" }}</td>
+        </tr>
+      </table>
+      <section class="w-full">
+        <app-offer-files [offer]="offer"></app-offer-files>
+      </section>
+      @if (offer.accepted) {
+        <section>
+          <h2>Szerződés</h2>
+          <hr />
+          @if (offer.files.length) {
+            <button mat-raised-button color="primary" (click)="drawer.toggle()">Szerződés összeállítása</button>
+          } @else {
+            <p>Ajánlat nincs feltöltve</p>
+          }
+        </section>
+      }
+    </mat-drawer-content>
+  }
+</mat-drawer-container>

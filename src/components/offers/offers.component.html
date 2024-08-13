@@ -1,0 +1,73 @@
+@if (years.length) {
+  <mat-form-field class="select-year" subscriptSizing="dynamic">
+    <mat-label>Év</mat-label>
+    <mat-select [value]="years[0]" (valueChange)="selectYear($event)">
+      @for (year of years; track $index) {
+        <mat-option [value]="year">{{ year }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+}
+@if (mode === "client") {
+  <h2>Ajánlatok</h2>
+  <hr />
+}
+@if (isLoadingResults) {
+  <div class="container-spinner">
+    <mat-spinner></mat-spinner>
+  </div>
+}
+@if (!isLoadingResults && offers.length === 0) {
+  <p class="text-center" style="margin-left: 20px">Az ajánlatok listája üres</p>
+}
+@if (offers.length > 0) {
+  <table mat-table [dataSource]="offers" matSort (matSortChange)="sortOffers($event)">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="id">Sorszám</th>
+      <td mat-cell *matCellDef="let offer">{{ ("" + offer.year | slice: -2) + "/" + (offer.id | number: "3.") }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="createdAt">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="createdAt">Létrehozva</th>
+      <td mat-cell *matCellDef="let offer">{{ offer.createdAt | date: undefined : undefined : "hu" }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="subject">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="subject">Tárgy</th>
+      <td mat-cell *matCellDef="let offer">{{ offer.subject }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="commonAdvisor">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="commonAdvisor">MS-sel közös / tanácsadó</th>
+      <td mat-cell *matCellDef="let offer">{{ offer.commonAdvisor }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="expert">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="expert">Szakértő</th>
+      <td mat-cell *matCellDef="let offer">{{ offer.expert }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="price">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="price">Ajánlati összeg (Ft)</th>
+      <td mat-cell *matCellDef="let offer">{{ offer.price | currency: "HUF" : "symbol-narrow" : "1.0" : "hu-HU" }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="accepted">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="accepted">Elfogadva</th>
+      <td mat-cell *matCellDef="let offer"><app-state-icon [state]="offer.accepted"></app-state-icon></td>
+    </ng-container>
+
+    <ng-container matColumnDef="contract">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="contract">Szerződés</th>
+      <td mat-cell *matCellDef="let offer"><app-state-icon [state]="offer.contract"></app-state-icon></td>
+    </ng-container>
+
+    <ng-container matColumnDef="updatedAt">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="updatedAt">Módosítva</th>
+      <td mat-cell *matCellDef="let offer">{{ offer.updatedAt | date: undefined : undefined : "hu" }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="goOfferDetails(row.year, row.id)"></tr>
+  </table>
+}

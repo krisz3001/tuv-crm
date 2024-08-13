@@ -1,0 +1,51 @@
+:host {
+  display: flex;
+  height: calc(100% - 64px);
+  flex-direction: column;
+  position: relative;
+}
+
+mat-drawer-container {
+  height: 100%;
+}
+
+mat-drawer {
+  width: 50%;
+}
+
+.details {
+  padding: 20px;
+}
+
+::ng-deep .offer-drawer .mat-drawer-inner-container {
+  display: flex;
+}
+
+.table-client-detail {
+  background-color: white;
+  border-spacing: 0;
+  margin: 20px 0;
+  border: 1px solid #e0e0e0;
+
+  tr:hover {
+    cursor: unset;
+  }
+
+  td {
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+  }
+}
+
+.actions {
+  margin-bottom: 20px;
+}
+
+.btn-panel {
+  display: flex;
+  gap: 10px;
+}
+
+section {
+  margin-top: 10px;
+}
