@@ -9,7 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule, MatSort, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { compare, errorSnackbarConfig } from '../../../helpers';
+import { compare, errorSnackbarConfig } from '../../../../helpers';
 import { Client } from '../../interfaces/client.interface';
 import { Offer } from '../../interfaces/offer.interface';
 import { SubscriptionCollection } from '../../interfaces/subscription-collection.interface';

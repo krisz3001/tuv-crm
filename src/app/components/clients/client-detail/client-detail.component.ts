@@ -8,7 +8,7 @@ import { MatSidenavModule, MatDrawer, MatDrawerContent } from '@angular/material
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
-import { successSnackbarConfig, errorSnackbarConfig } from '../../../../helpers';
+import { successSnackbarConfig, errorSnackbarConfig } from '../../../../../helpers';
 import { Client } from '../../../interfaces/client.interface';
 import { ClientService } from '../../../services/client.service';
 import { ConfirmationDialogComponent } from '../../ui/confirmation-dialog/confirmation-dialog.component';
@@ -43,8 +43,6 @@ export class ClientDetailComponent implements OnInit {
       this.clientService.getClient(this.id).subscribe({
         next: (client) => {
           this.offerService.getClientOffers(this.id).subscribe((res) => {
-            console.log(res);
-
             this.client = { ...client, offers: res };
           });
         },

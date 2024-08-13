@@ -10,7 +10,7 @@ import { Client } from '../../../interfaces/client.interface';
 import { MESSAGES } from '../../../messages/messages';
 import { ClientService } from '../../../services/client.service';
 import { ClientsComponent } from '../clients.component';
-import { errorSnackbarConfig, successSnackbarConfig } from '../../../../helpers';
+import { errorSnackbarConfig, successSnackbarConfig } from '../../../../../helpers';
 
 @Component({
   selector: 'app-client-editor',

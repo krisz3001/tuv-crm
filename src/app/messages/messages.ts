@@ -17,4 +17,5 @@ export const MESSAGES = {
   ErrDownloadingFiles: 'Hiba a fájlok letöltése közben',
   ErrFileTooLarge: 'A fájl mérete túl nagy',
   ErrFullNameRequired: 'A teljes név megadása kötelező',
+  ErrInvalidEmail: 'Email cím nem megfelelő',
 };

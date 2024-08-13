@@ -7,13 +7,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { compare, errorSnackbarConfig, successSnackbarConfig } from '../../../helpers';
+import { compare, errorSnackbarConfig, successSnackbarConfig } from '../../../../helpers';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ClientEditorComponent } from './client-editor/client-editor.component';
 import { Client } from '../../interfaces/client.interface';
 import { ClientService } from '../../services/client.service';
-import { ConfirmationDialogComponent } from '../ui/confirmation-dialog/confirmation-dialog.component';
 import { QueryDocumentSnapshot } from '@angular/fire/firestore';
 
 registerLocaleData(localeHu, 'hu'); // For displaying correctly with pipes
@@ -33,7 +32,7 @@ export class ClientsComponent implements OnInit {
   ) {}
 
   readonly dialog = inject(MatDialog);
-  displayedColumns: string[] = ['company', 'contact', 'createdAt', 'updatedAt', 'actions'];
+  displayedColumns: string[] = ['company', 'contact', 'createdAt', 'updatedAt'];
   clients: Client[] = [];
   isLoadingResults = true;
 
@@ -125,41 +124,5 @@ export class ClientsComponent implements OnInit {
 
   goClientDetails(id: number): void {
     this.router.navigate(['/dashboard/clients', id]);
-  }
-
-  editClient(event: MouseEvent, id: number): void {
-    event.stopPropagation();
-  }
-
-  deleteClient(event: MouseEvent, id: string): void {
-    event.stopPropagation();
-    if (this.dialog.openDialogs.length) {
-      return;
-    }
-
-    this.dialog
-      .open(ConfirmationDialogComponent, {
-        width: '350px',
-        data: {
-          title: 'Ügyfél törlése',
-          message: 'Biztosan törölni szeretnéd az ügyfelet?',
-          confirm: 'Törlés',
-          confirmColor: 'warn',
-        },
-      })
-      .afterClosed()
-      .subscribe((confirmed) => {
-        if (confirmed) {
-          this.clientService.deleteClient(id).subscribe({
-            next: () => {
-              this.displayClients();
-              this.snackBar.open('Az ügyfél sikeresen törölve!', undefined, successSnackbarConfig);
-            },
-            error: (error) => {
-              this.snackBar.open(error.message, undefined, errorSnackbarConfig);
-            },
-          });
-        }
-      });
   }
 }
