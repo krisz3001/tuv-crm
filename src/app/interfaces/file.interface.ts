@@ -1,11 +1,7 @@
-import { FileType } from '../enums/file-type';
+import { StorageReference } from '@angular/fire/storage';
 
 export interface File {
-  id: number;
+  name: string;
   path: string;
-  filename: string;
-  type: FileType;
-  extension: string;
-  createdAt: string;
-  updatedAt: string;
+  ref: StorageReference;
 }

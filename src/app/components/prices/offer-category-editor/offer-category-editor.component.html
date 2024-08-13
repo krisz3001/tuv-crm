@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Kategória {{ data ? "módosítása" : "hozzáadása" }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="categoryForm" (submit)="handleSubmit()" spellcheck="false">
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label>Név</mat-label>
+      <input matInput formControlName="name" name="name" />
+      @if (name.errors?.["required"]) {
+        <mat-error>Név megadása kötelező</mat-error>
+      }
+    </mat-form-field>
+    <div class="dialog-actions">
+      <button mat-raised-button color="primary" [disabled]="categoryForm.invalid">
+        {{ data ? "Mentés" : "Hozzáadás" }}
+      </button>
+      <button mat-button [mat-dialog-close]="undefined">Mégsem</button>
+    </div>
+  </form>
+</mat-dialog-content>

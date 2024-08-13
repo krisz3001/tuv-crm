@@ -1,7 +1,7 @@
 <mat-drawer-container [hasBackdrop]="false">
   <mat-drawer #drawer mode="over" position="end" class="offer-drawer">
     @if (client) {
-      <!-- <app-construct-offer [client]="client" [drawer]="drawer"></app-construct-offer> -->
+      <app-construct-offer [client]="client" [drawer]="drawer"></app-construct-offer>
     }
   </mat-drawer>
   <mat-drawer-content class="details {{ drawer.opened ? 'drawer-open' : '' }}" #drawerContent>

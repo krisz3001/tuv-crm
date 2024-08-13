@@ -7,6 +7,7 @@ import { ClientDetailComponent } from './components/clients/client-detail/client
 import { authGuard } from './guards/auth.guard';
 import { landingGuard } from './guards/landing.guard';
 import { OffersComponent } from './components/offers/offers.component';
+import { OfferDetailComponent } from './components/offers/offer-detail/offer-detail.component';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent, title: 'Kezdőlap', canActivate: [landingGuard] },
@@ -19,6 +20,7 @@ export const routes: Routes = [
       { path: 'clients', component: ClientsComponent, title: 'Ügyfelek' },
       { path: 'clients/:id', component: ClientDetailComponent, title: 'Ügyfél részletek' },
       { path: 'offers', component: OffersComponent, title: 'Ajánlatok' },
+      { path: 'offers/:id', component: OfferDetailComponent, title: 'Ajánlat részletek' },
     ],
   },
   { path: '**', component: PageNotFoundComponent },

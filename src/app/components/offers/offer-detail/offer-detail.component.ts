@@ -5,18 +5,18 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
-import { OfferService } from '../../../../services/offer.service';
-import { StateIconComponent } from '../../../ui/state-icon/state-icon.component';
 import { ConstructOfferComponent } from '../../document-constructors/construct-offer/construct-offer.component';
 import { OfferFilesComponent } from '../offer-files/offer-files.component';
-import { Offer, OfferEditor } from '../../../../interfaces/offer.interface';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmationDialogComponent } from '../../../ui/confirmation-dialog/confirmation-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { errorSnackbarConfig, successSnackbarConfig } from '../../../../helpers';
 import { CurrencyPipe, DatePipe, DecimalPipe, SlicePipe } from '@angular/common';
-import { SubscriptionCollection } from '../../../../interfaces/subscription-collection.interface';
-import { FileService } from '../../../../services/file.service';
+import { successSnackbarConfig, errorSnackbarConfig } from '../../../../../helpers';
+import { Offer, OfferEditor } from '../../../interfaces/offer.interface';
+import { SubscriptionCollection } from '../../../interfaces/subscription-collection.interface';
+import { FileService } from '../../../services/file.service';
+import { OfferService } from '../../../services/offer.service';
+import { ConfirmationDialogComponent } from '../../ui/confirmation-dialog/confirmation-dialog.component';
+import { StateIconComponent } from '../../ui/state-icon/state-icon.component';
 
 @Component({
   selector: 'app-offer-detail',
@@ -38,38 +38,26 @@ import { FileService } from '../../../../services/file.service';
   templateUrl: './offer-detail.component.html',
   styleUrl: './offer-detail.component.css',
 })
-export class OfferDetailComponent implements OnInit, OnDestroy {
+export class OfferDetailComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private offerService: OfferService,
     private snackBar: MatSnackBar,
-    private fileService: FileService,
   ) {}
 
   year!: number;
-  id!: number;
+  id!: string;
   offer!: Offer;
   readonly dialog = inject(MatDialog);
-  subs: SubscriptionCollection = {};
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((params) => {
-      this.year = Number(params['year']);
-      this.id = Number(params['id']);
+      this.id = params['id'];
 
-      if (isNaN(this.year) || isNaN(this.id)) {
-        this.router.navigate(['/dashboard/clients']);
-        return;
-      }
-
-      this.offerService.getOffer(this.year, this.id).subscribe({
+      this.offerService.getOffer(this.id).subscribe({
         next: (offer) => {
           this.offer = offer;
-          this.fileService.filesList.next(offer.files);
-          this.subs['files'] = this.fileService.filesList.subscribe((files) => {
-            this.offer.files = files;
-          });
         },
         error: () => {
           this.router.navigate(['/dashboard/clients']);
@@ -94,14 +82,9 @@ export class OfferDetailComponent implements OnInit, OnDestroy {
       .afterClosed()
       .subscribe((confirmed) => {
         if (confirmed) {
-          this.offer.accepted = true;
-          const offerEditor: OfferEditor = {
-            offer: this.offer,
-            comment: '',
-            options: null,
-          };
-          this.offerService.patchOffer(offerEditor).subscribe({
+          this.offerService.patchOffer({ ...this.offer, accepted: true }).subscribe({
             next: () => {
+              this.offer.accepted = true;
               this.snackBar.open('Az ajánlatot sikeresen elfogadta!', undefined, successSnackbarConfig);
             },
             error: () => {
@@ -110,9 +93,5 @@ export class OfferDetailComponent implements OnInit, OnDestroy {
           });
         }
       });
-  }
-
-  ngOnDestroy(): void {
-    Object.values(this.subs).forEach((sub) => sub.unsubscribe());
   }
 }

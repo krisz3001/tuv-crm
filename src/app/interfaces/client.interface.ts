@@ -4,7 +4,7 @@ import { Contract } from './contract.interface';
 import { Offer } from './offer.interface';
 
 export interface Client {
-  id: string;
+  firebaseId: string;
   company: string;
   contact: string;
   offers: Offer[];

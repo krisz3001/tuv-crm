@@ -15,7 +15,7 @@
         </tr>
         <tr>
           <td><strong>Dátum</strong></td>
-          <td>{{ offer.createdAt | date: undefined : undefined : "hu" }}</td>
+          <td>{{ offer.createdAt.toDate() | date: undefined : undefined : "hu" }}</td>
         </tr>
         <tr>
           <td><strong>Tárgy</strong></td>
@@ -43,7 +43,7 @@
         </tr>
         <tr>
           <td><strong>Módosítva</strong></td>
-          <td>{{ offer.updatedAt | date: undefined : undefined : "hu" }}</td>
+          <td>{{ offer.updatedAt.toDate() | date: undefined : undefined : "hu" }}</td>
         </tr>
       </table>
       <section class="w-full">
@@ -53,11 +53,11 @@
         <section>
           <h2>Szerződés</h2>
           <hr />
-          @if (offer.files.length) {
+          <!-- @if (offer.files.length) {
             <button mat-raised-button color="primary" (click)="drawer.toggle()">Szerződés összeállítása</button>
           } @else {
             <p>Ajánlat nincs feltöltve</p>
-          }
+          } -->
         </section>
       }
     </mat-drawer-content>

@@ -13,12 +13,12 @@
 }
 @if (files.length > 0) {
   <table mat-table [dataSource]="files" matSort (matSortChange)="sortFiles($event)">
-    <ng-container matColumnDef="filename">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header="filename">Fájl</th>
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="name">Fájl</th>
       <td mat-cell *matCellDef="let file">
         <div class="cell-filename">
           <mat-icon svgIcon="word"></mat-icon>
-          {{ file.filename + "." + file.extension }}
+          {{ file.name }}
         </div>
       </td>
     </ng-container>
@@ -29,16 +29,13 @@
     </ng-container>
 
     <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef>Műveletek</th>
-      <td mat-cell *matCellDef="let file" style="padding: 0">
-        <button mat-icon-button color="primary" (click)="editFile($event, file)">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" (click)="deleteFile($event, file.id)"><mat-icon>delete</mat-icon></button>
+      <th mat-header-cell *matHeaderCellDef style="text-align: center">Műveletek</th>
+      <td mat-cell *matCellDef="let file" style="display: flex; justify-content: center">
+        <button mat-icon-button color="warn" (click)="deleteFile($event, file.ref)"><mat-icon>delete</mat-icon></button>
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="downloadFile(row.id)"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="downloadFile(row.ref)"></tr>
   </table>
 }

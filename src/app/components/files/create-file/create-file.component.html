@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>Fájl feltöltése</h2>
+<mat-dialog-content>
+  <form [formGroup]="fileForm" (submit)="uploadFile()" spellcheck="false">
+    <app-file-drag-and-drop (fileChange)="setFile($event)" accept=".docx"></app-file-drag-and-drop>
+    <div class="dialog-actions">
+      <button mat-raised-button color="primary" [disabled]="fileForm.invalid">Mentés</button>
+      <button mat-button [mat-dialog-close]="undefined">Mégsem</button>
+    </div>
+  </form>
+</mat-dialog-content>

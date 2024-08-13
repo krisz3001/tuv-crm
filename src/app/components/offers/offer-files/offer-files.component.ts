@@ -1,23 +1,22 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
-import { File } from '../../../../interfaces/file.interface';
-import { compare, errorSnackbarConfig, successSnackbarConfig } from '../../../../helpers';
-import { FileTypePipe } from '../../../../pipes/file-type.pipe';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatButtonModule } from '@angular/material/button';
-import { FileService } from '../../../../services/file.service';
-import { SubscriptionCollection } from '../../../../interfaces/subscription-collection.interface';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { EditFileComponent } from '../../files/edit-file/edit-file.component';
-import { CreateFileComponent } from '../../files/create-file/create-file.component';
-import { DeleteDialogComponent } from '../../../ui/delete-dialog/delete-dialog.component';
-import { Offer } from '../../../../interfaces/offer.interface';
-import { FileType } from '../../../../enums/file-type';
 import { DatePipe } from '@angular/common';
+import { compare, errorSnackbarConfig, successSnackbarConfig } from '../../../../../helpers';
+import { FileType } from '../../../enums/file-type';
+import { Offer } from '../../../interfaces/offer.interface';
+import { FileTypePipe } from '../../../pipes/file-type.pipe';
+import { FileService } from '../../../services/file.service';
+import { DeleteDialogComponent } from '../../ui/delete-dialog/delete-dialog.component';
+import { File } from '../../../interfaces/file.interface';
+import { CreateFileComponent } from '../../files/create-file/create-file.component';
+import { StorageReference } from '@angular/fire/storage';
 
 @Component({
   selector: 'app-offer-files',
@@ -26,21 +25,20 @@ import { DatePipe } from '@angular/common';
   templateUrl: './offer-files.component.html',
   styleUrl: './offer-files.component.css',
 })
-export class OfferFilesComponent implements OnInit, OnDestroy {
+export class OfferFilesComponent implements OnInit {
   constructor(
     private fileService: FileService,
     private matIconRegistry: MatIconRegistry,
     domSanitizer: DomSanitizer,
     private snackBar: MatSnackBar,
   ) {
-    this.matIconRegistry.addSvgIcon('word', domSanitizer.bypassSecurityTrustResourceUrl('../../../../../assets/icons/word.svg')); // TODO: add more icons
+    this.matIconRegistry.addSvgIcon('word', domSanitizer.bypassSecurityTrustResourceUrl('../../../../assets/icons/word.svg')); // TODO: add more icons
   }
 
   readonly dialog = inject(MatDialog);
   files: File[] = [];
-  displayedColumns: string[] = ['filename', 'createdAt', 'actions'];
+  displayedColumns: string[] = ['name', 'actions'];
   isLoadingFiles = true;
-  private subs: SubscriptionCollection = {};
 
   @ViewChild(MatSort)
   sort: MatSort | undefined;
@@ -48,11 +46,19 @@ export class OfferFilesComponent implements OnInit, OnDestroy {
   @Input() offer!: Offer;
 
   ngOnInit(): void {
-    this.fileService.fileType = FileType.OFFER;
-    this.files = this.offer.files;
-    this.subs['files'] = this.fileService.filesList.subscribe((files) => {
-      this.files = files;
-      this.isLoadingFiles = false;
+    this.getFiles();
+  }
+
+  getFiles(): void {
+    this.fileService.getFiles(this.offer).subscribe({
+      next: (res) => {
+        this.files = res!.items.map((item) => ({ name: item.name, path: item.fullPath, ref: item }) as File);
+        this.isLoadingFiles = false;
+      },
+      error: (error) => {
+        this.snackBar.open(error.message, undefined, errorSnackbarConfig);
+        this.isLoadingFiles = false;
+      },
     });
   }
 
@@ -63,35 +69,14 @@ export class OfferFilesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.files = data.sort((a, b) => {
+    this.files = data.sort((a: any, b: any) => {
       const isAsc = sort.direction === 'asc';
-      switch (sort.active) {
-        case 'id':
-          return compare(a.id, b.id, isAsc);
-        case 'filename':
-          return compare(a.filename + a.extension, b.filename + b.extension, isAsc);
-        case 'createdAt':
-          return compare(a.createdAt, b.createdAt, isAsc);
-        default:
-          return 0;
-      }
+      return compare(a[sort.active], b[sort.active], isAsc);
     });
   }
 
-  editFile(event: MouseEvent, file: File): void {
-    event.stopPropagation();
-    if (this.dialog.openDialogs.length) {
-      return;
-    }
-
-    this.dialog.open(EditFileComponent, {
-      width: '500px',
-      data: { offer: this.offer, file },
-    });
-  }
-
-  downloadFile(id: number): void {
-    this.fileService.downloadFile(id).subscribe({
+  downloadFile(ref: StorageReference): void {
+    this.fileService.downloadFile(ref).subscribe({
       error: (error) => {
         this.snackBar.open(error.message, undefined, errorSnackbarConfig);
       },
@@ -103,13 +88,20 @@ export class OfferFilesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.dialog.open(CreateFileComponent, {
-      width: '500px',
-      data: { document: this.offer, fileType: FileType.OFFER },
-    });
+    this.dialog
+      .open(CreateFileComponent, {
+        width: '500px',
+        data: { document: this.offer, fileType: FileType.OFFER },
+      })
+      .afterClosed()
+      .subscribe((uploaded) => {
+        if (uploaded) {
+          this.getFiles();
+        }
+      });
   }
 
-  deleteFile(event: MouseEvent, id: number): void {
+  deleteFile(event: MouseEvent, ref: StorageReference): void {
     event.stopPropagation();
     if (this.dialog.openDialogs.length) {
       return;
@@ -120,8 +112,9 @@ export class OfferFilesComponent implements OnInit, OnDestroy {
       .afterClosed()
       .subscribe((confirmed) => {
         if (confirmed) {
-          this.fileService.deleteFile(id).subscribe({
+          this.fileService.deleteFile(ref).subscribe({
             next: () => {
+              this.getFiles();
               this.snackBar.open('Fájl sikeresen törölve!', undefined, successSnackbarConfig);
             },
             error: (error) => {
@@ -130,9 +123,5 @@ export class OfferFilesComponent implements OnInit, OnDestroy {
           });
         }
       });
-  }
-
-  ngOnDestroy(): void {
-    Object.values(this.subs).forEach((sub) => sub.unsubscribe());
   }
 }

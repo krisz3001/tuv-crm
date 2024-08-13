@@ -1,0 +1,40 @@
+<button mat-icon-button (click)="drawer.toggle()" class="btn-close">
+  <mat-icon>close</mat-icon>
+</button>
+<h1>Ajánlat adatai<app-state-icon [state]="offerState ? true : null"></app-state-icon></h1>
+<hr class="w-full" />
+<app-create-offer (offer)="handleOffer($event)" (valid)="offerState = $event"></app-create-offer>
+<h1>
+  Dokumentum összeállítása<app-state-icon [state]="documentState ? true : null"></app-state-icon
+  ><button mat-button color="primary" (click)="editPrices()"><mat-icon>edit</mat-icon>Árak módosítása</button>
+</h1>
+<hr class="w-full" />
+<form (submit)="generateOffer()" spellcheck="false">
+  @for (category of offerForm; track $index) {
+    <mat-checkbox (change)="toggleCategory(category.id)" [checked]="category.selected">{{ category.name }}</mat-checkbox>
+    @if (category.offerPrices.length > 0 && category.selected) {
+      <ul class="subcategories">
+        @for (offerPrice of category.offerPrices; track $index) {
+          <li>
+            <mat-checkbox (change)="toggleSubCategory(category.id, offerPrice.id)" [checked]="offerPrice.selected">{{ offerPrice.name }}</mat-checkbox>
+          </li>
+        }
+      </ul>
+    }
+  }
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Ajánlati összeg</mat-label>
+    <input type="number" matInput [(ngModel)]="price" name="price" />
+  </mat-form-field>
+  <mat-form-field class="textarea" subscriptSizing="dynamic">
+    <mat-label>Megjegyzés</mat-label>
+    <textarea matInput cdkTextareaAutosize [(ngModel)]="offerEditor.comment" name="comment"></textarea>
+  </mat-form-field>
+  <div class="btn-panel">
+    <button mat-raised-button color="primary" class="btn-generate" [disabled]="!offerState || !documentState">Dokumentum kiállítása</button>
+    @if (createdOffer) {
+      <button mat-raised-button color="primary" type="button" (click)="downloadOffer()"><mat-icon>download</mat-icon>Letöltés</button>
+      <button mat-raised-button color="accent" type="button" (click)="goOfferDetails()"><mat-icon>open_in_new</mat-icon>Ajánlat megtekintése</button>
+    }
+  </div>
+</form>

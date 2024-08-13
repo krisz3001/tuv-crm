@@ -8,17 +8,13 @@ service cloud.firestore {
 
   function clientIsValid() {
     return request.resource.data.company is string &&
-    request.resource.data.contact is string &&
-    request.resource.data.createdAt is timestamp &&
-    request.resource.data.updatedAt is timestamp;
+    request.resource.data.contact is string
   }
 
   function offerIsValid() {
     return request.resource.data.clientId is string &&
     request.resource.data.subject is string &&
-    request.resource.data.price is number &&
-    request.resource.data.createdAt is timestamp &&
-    request.resource.data.updatedAt is timestamp;
+    request.resource.data.price is number
   }
 
   match /databases/{database}/documents {

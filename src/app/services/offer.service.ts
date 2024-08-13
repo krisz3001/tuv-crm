@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Offer, OfferCreated, OfferEditor, OffersWithYears } from '../interfaces/offer.interface';
 import { Observable, Subject, from, of } from 'rxjs';
 import { ErrorHandlerService } from './error-handler.service';
-import { collection, collectionData, Firestore, getDocs, query, where } from '@angular/fire/firestore';
+import { addDoc, collection, collectionData, doc, DocumentReference, Firestore, getDoc, orderBy, query, setDoc, where } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -15,28 +15,36 @@ export class OfferService {
   resetFormHotline = new Subject<boolean>();
 
   getOffers(): Observable<Offer[]> {
-    return collectionData(this.offers, { idField: 'id' }) as Observable<Offer[]>;
+    return collectionData(query(this.offers, orderBy('year'), orderBy('id')), { idField: 'firebaseId' }) as Observable<Offer[]>;
   }
 
   getClientOffers(clientId: string): Observable<Offer[]> {
-    const promise = getDocs(query(this.offers, where('clientId', '==', clientId))).then((res) => res.docs.map((doc) => doc.data() as Offer));
-    return from(promise);
+    return collectionData(query(this.offers, where('clientId', '==', clientId), orderBy('year'), orderBy('id')), { idField: 'firebaseId' }) as Observable<Offer[]>;
   }
 
   getFilteredOffers(year: number): Observable<Offer[]> {
     return of([]);
   }
 
-  getOffer(year: number, id: number): Observable<Offer> {
-    return of({} as Offer);
+  getOffer(firebaseId: string): Observable<Offer> {
+    const docRef = doc(this.firestore, 'offers', firebaseId);
+    const promise = getDoc(docRef).then((res) => res.data() as Offer);
+    return from(promise);
   }
 
-  postOffer(offerEditor: OfferEditor): Observable<OfferCreated> {
-    return of({} as OfferCreated);
+  postOffer(offerEditor: OfferEditor): Observable<DocumentReference> {
+    const promise = addDoc(this.offers, offerEditor.offer);
+    return from(promise);
   }
 
-  patchOffer(offerEditor: OfferEditor): Observable<OfferCreated> {
-    return of({} as OfferCreated);
+  patchOffer(offer: Offer): Observable<Offer | void> {
+    console.log(offer);
+
+    const docRef = doc(this.firestore, 'offers', offer.firebaseId);
+    const promise = setDoc(docRef, offer, { merge: true })
+      .then(() => offer)
+      .catch((error) => this.errorHandler.handleError(error));
+    return from(promise);
   }
 
   resetCreateForm(): void {

@@ -15,12 +15,12 @@ import { ConfirmationDialogComponent } from '../../ui/confirmation-dialog/confir
 import { StateIconComponent } from '../../ui/state-icon/state-icon.component';
 import { ClientEditorComponent } from '../client-editor/client-editor.component';
 import { OffersComponent } from '../../offers/offers.component';
-import { OfferService } from '../../../services/offer.service';
+import { ConstructOfferComponent } from '../../document-constructors/construct-offer/construct-offer.component';
 
 @Component({
   selector: 'app-client-detail',
   standalone: true,
-  imports: [MatButtonModule, MatDividerModule, MatSidenavModule, MatTableModule, MatIconModule, StateIconComponent, DatePipe, OffersComponent],
+  imports: [MatButtonModule, MatDividerModule, MatSidenavModule, MatTableModule, MatIconModule, StateIconComponent, DatePipe, OffersComponent, ConstructOfferComponent],
   templateUrl: './client-detail.component.html',
   styleUrl: './client-detail.component.css',
 })
@@ -30,7 +30,6 @@ export class ClientDetailComponent implements OnInit {
     private router: Router,
     private clientService: ClientService,
     private snackBar: MatSnackBar,
-    private offerService: OfferService,
   ) {}
 
   id!: string;
@@ -42,9 +41,7 @@ export class ClientDetailComponent implements OnInit {
       this.id = params['id'];
       this.clientService.getClient(this.id).subscribe({
         next: (client) => {
-          this.offerService.getClientOffers(this.id).subscribe((res) => {
-            this.client = { ...client, offers: res };
-          });
+          this.client = client;
         },
         error: () => {
           this.router.navigate(['/dashboard/clients']);
@@ -94,7 +91,7 @@ export class ClientDetailComponent implements OnInit {
       .afterClosed()
       .subscribe((confirmed) => {
         if (confirmed) {
-          this.clientService.deleteClient(this.client.id).subscribe({
+          this.clientService.deleteClient(this.client.firebaseId).subscribe({
             next: () => {
               this.snackBar.open('Az ügyfél sikeresen törölve lett.', undefined, successSnackbarConfig);
               this.router.navigate(['/dashboard/clients']);

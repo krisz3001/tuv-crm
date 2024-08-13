@@ -1,15 +1,9 @@
-import { Client } from './client.interface';
+import { Document } from './document.interface';
 
-export interface Certificate {
-  id: number;
+export interface Certificate extends Document {
   name: string;
   expiration: string;
-  clientID: number;
-  client: Client;
   ped: boolean;
   weldingDate: string;
   manufacturer: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string;
 }

@@ -56,8 +56,11 @@ export class OffersComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.mode === 'client') {
-      this.offers = this.client.offers;
-      this.isLoadingResults = false;
+      this.offerService.getClientOffers(this.client.firebaseId).subscribe((offers) => {
+        this.offers = offers;
+        this.setYears();
+        this.isLoadingResults = false;
+      });
     } else this.getAllOffers();
   }
 
@@ -66,6 +69,7 @@ export class OffersComponent implements OnInit, OnDestroy {
     this.offerService.getOffers().subscribe({
       next: (offers) => {
         this.offers = offers;
+        this.setYears();
         this.isLoadingResults = false;
       },
       error: (error) => {
@@ -73,6 +77,10 @@ export class OffersComponent implements OnInit, OnDestroy {
         this.isLoadingResults = false;
       },
     });
+  }
+
+  setYears(): void {
+    this.years = this.offers.map((offer) => offer.year).filter((value, index, self) => self.indexOf(value) === index);
   }
 
   sortOffers(sort: Sort): void {
@@ -88,8 +96,8 @@ export class OffersComponent implements OnInit, OnDestroy {
     });
   }
 
-  goOfferDetails(year: number, id: number): void {
-    this.router.navigate(['/dashboard/offers', year, id]);
+  goOfferDetails(firebaseId: string): void {
+    this.router.navigate(['/dashboard/offers', firebaseId]);
   }
 
   selectYear(year: number): void {
