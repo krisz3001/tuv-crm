@@ -56,7 +56,8 @@ export class OffersComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.mode === 'client') {
-      this.offerService.getClientOffers(this.client.firebaseId).subscribe((offers) => {
+      this.subs['offers']?.unsubscribe();
+      this.subs['offers'] = this.offerService.getClientOffers(this.client.firebaseId).subscribe((offers) => {
         this.offers = offers;
         this.setYears();
         this.isLoadingResults = false;
@@ -66,7 +67,8 @@ export class OffersComponent implements OnInit, OnDestroy {
 
   getAllOffers(): void {
     this.isLoadingResults = true;
-    this.offerService.getOffers().subscribe({
+    this.subs['offers']?.unsubscribe();
+    this.subs['offers'] = this.offerService.getOffers().subscribe({
       next: (offers) => {
         this.offers = offers;
         this.setYears();
