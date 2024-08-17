@@ -1,0 +1,65 @@
+@if (mode === "client") {
+  <h2>Tanúsítványok</h2>
+  <hr />
+}
+<div class="actions">
+  <button mat-raised-button aria-label="New client button" color="primary" disabled="true">
+    <mat-icon>add</mat-icon>
+    Új tanúsítvány
+  </button>
+  <button mat-raised-button color="warn" (click)="debugCreateCertificate()">
+    <mat-icon>add</mat-icon>
+    Új random tanúsítvány (debug)
+  </button>
+</div>
+@if (isLoadingResults) {
+  <div class="container-spinner">
+    <mat-spinner></mat-spinner>
+  </div>
+}
+@if (!isLoadingResults && certificates.length === 0) {
+  <p class="text-center" style="margin-left: 20px">A tanúsítványok listája üres</p>
+}
+@if (certificates.length > 0) {
+  <table mat-table [dataSource]="certificates">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>Sorszám</th>
+      <td mat-cell *matCellDef="let certificate">{{ "ÉMI-TÜV 24.001-V" + (certificate.id | number: "3.") }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="expiration">
+      <th mat-header-cell *matHeaderCellDef>Lejárat</th>
+      <td mat-cell *matCellDef="let certificate" class="certificate-expired">
+        <app-expiration [expiration]="certificate.expiration"></app-expiration>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="manufacturer">
+      <th mat-header-cell *matHeaderCellDef>Gyártó</th>
+      <td mat-cell *matCellDef="let certificate">{{ certificate.manufacturer }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Név</th>
+      <td mat-cell *matCellDef="let certificate">{{ certificate.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="ped">
+      <th mat-header-cell *matHeaderCellDef>PED</th>
+      <td mat-cell *matCellDef="let certificate">{{ certificate.ped ? "Igen" : "Nem" }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="weldingDate">
+      <th mat-header-cell *matHeaderCellDef>Hegesztés dátuma</th>
+      <td mat-cell *matCellDef="let certificate">{{ certificate.weldingDate | date: undefined : undefined : "hu" }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="createdAt">
+      <th mat-header-cell *matHeaderCellDef>Kiállítva</th>
+      <td mat-cell *matCellDef="let certificate">{{ certificate.createdAt | date: undefined : undefined : "hu" }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+}

@@ -8,9 +8,14 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PricesComponent } from '../prices.component';
 import { successSnackbarConfig, errorSnackbarConfig } from '../../../../../helpers';
-import { OfferCategory } from '../../../interfaces/offer-category.interface';
 import { MESSAGES } from '../../../messages/messages';
 import { PriceService } from '../../../services/price.service';
+import { OfferCategory } from '../../../interfaces/offer.interface';
+
+interface DialogData {
+  categories: OfferCategory[];
+  editIndex?: number;
+}
 
 @Component({
   selector: 'app-offer-category-editor',
@@ -26,10 +31,10 @@ export class OfferCategoryEditorComponent {
   ) {}
 
   readonly dialogRef = inject(MatDialogRef<PricesComponent>);
-  readonly data = inject<OfferCategory>(MAT_DIALOG_DATA);
+  readonly data = inject<DialogData>(MAT_DIALOG_DATA);
   messages = MESSAGES;
   readonly categoryForm = new FormGroup({
-    name: new FormControl(this.data ? this.data.name : '', [Validators.required]),
+    name: new FormControl(typeof this.data.editIndex == 'number' ? this.data.categories[this.data.editIndex].name : '', [Validators.required]),
   });
 
   handleSubmit(): void {
@@ -37,7 +42,7 @@ export class OfferCategoryEditorComponent {
       return;
     }
 
-    if (this.data) {
+    if (typeof this.data.editIndex == 'number') {
       this.editCategory();
     } else {
       this.createCategory();
@@ -45,7 +50,13 @@ export class OfferCategoryEditorComponent {
   }
 
   createCategory(): void {
-    this.priceService.postCategory(this.categoryForm.value as OfferCategory).subscribe({
+    const category: OfferCategory = {
+      name: this.categoryForm.value.name!,
+      offerOptions: [],
+    };
+    this.data.categories.push(category);
+
+    this.priceService.saveCategories(this.data.categories).subscribe({
       next: () => {
         this.snackBar.open('Kategória sikeresen létrehozva!', undefined, successSnackbarConfig);
         this.dialogRef.close(true);
@@ -57,10 +68,11 @@ export class OfferCategoryEditorComponent {
   }
 
   editCategory(): void {
-    this.priceService.patchCategory({ ...this.data, ...this.categoryForm.value } as OfferCategory).subscribe({
-      next: (category) => {
+    this.data.categories[this.data.editIndex!].name = this.categoryForm.value.name!;
+    this.priceService.saveCategories(this.data.categories).subscribe({
+      next: () => {
         this.snackBar.open('Kategória sikeresen módosítva!', undefined, successSnackbarConfig);
-        this.dialogRef.close(category);
+        this.dialogRef.close(true);
       },
       error: (error) => {
         this.snackBar.open(error.message, undefined, errorSnackbarConfig);

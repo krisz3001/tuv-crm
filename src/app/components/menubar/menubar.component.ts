@@ -17,7 +17,11 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './menubar.component.css',
 })
 export class MenubarComponent implements OnInit {
-  constructor(private authService: AuthService, private router: Router, private activatedRoute: ActivatedRoute) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+  ) {}
 
   @Input() drawer!: MatDrawer;
   path = '';
@@ -34,7 +38,7 @@ export class MenubarComponent implements OnInit {
             route = route.firstChild;
           }
           return route;
-        })
+        }),
       )
       .subscribe((route) => (this.path = route.snapshot.title || ''));
 
@@ -53,7 +57,6 @@ export class MenubarComponent implements OnInit {
   logout(): void {
     this.authService.logout().subscribe({
       next: () => {
-        console.log('Logged out');
         this.router.navigate(['/']);
       },
     });

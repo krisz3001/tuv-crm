@@ -14,3 +14,7 @@ section {
   display: flex;
   gap: 10px;
 }
+
+tr:hover {
+  cursor: unset;
+}

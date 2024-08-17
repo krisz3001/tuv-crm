@@ -6,15 +6,16 @@ service cloud.firestore {
     return request.auth != null;
   }
 
-  function clientIsValid() {
-    return request.resource.data.company is string &&
-    request.resource.data.contact is string
+  function clientIsValid(client) {
+    return client.company is string &&
+    client.contact is string
   }
 
-  function offerIsValid() {
-    return request.resource.data.clientId is string &&
-    request.resource.data.subject is string &&
-    request.resource.data.price is number
+  function offerValid(offer) {
+    return offer.subject is string &&
+    offer.commonAdvisor is string &&
+    offer.expert is string &&
+    offer.price is number
   }
 
   match /databases/{database}/documents {
@@ -25,8 +26,8 @@ service cloud.firestore {
 
     match /clients/{clientId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && clientIsValid();
-      allow update: if isSignedIn() && clientIsValid() && request.resource.data.createdAt == resource.data.createdAt;
+      allow create: if isSignedIn() && clientIsValid(request.resource.data);
+      allow update: if isSignedIn() && clientIsValid(request.resource.data) && request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if isSignedIn();
     }
 
@@ -36,9 +37,13 @@ service cloud.firestore {
 
     match /offers/{offerId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && offerIsValid();
-      allow update: if isSignedIn() && offerIsValid() && request.resource.data.createdAt == resource.data.createdAt;
+      allow create: if isSignedIn() && offerValid(request.resource.data);
+      allow update: if isSignedIn();
       allow delete: if isSignedIn();
+    }
+
+    match /offer-categories/{categoryId} {
+      allow read, write: if isSignedIn();
     }
   }
 }

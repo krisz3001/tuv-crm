@@ -1,46 +1,32 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { OfferCategory } from '../interfaces/offer-category.interface';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { ErrorHandlerService } from './error-handler.service';
-import { OfferPrice } from '../interfaces/offer-price.interface';
+import { doc, Firestore, onSnapshot, setDoc, Unsubscribe } from '@angular/fire/firestore';
+import { OfferCategory } from '../interfaces/offer.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PriceService {
-  constructor(
-    private http: HttpClient,
-    private errorHandler: ErrorHandlerService,
-  ) {}
+  errorHandler = inject(ErrorHandlerService);
+  firestore = inject(Firestore);
 
-  categories: OfferCategory[] = [];
+  categories = new BehaviorSubject<OfferCategory[]>([]);
 
-  getCategories(): Observable<OfferCategory[]> {
-    return of([]);
+  getCategories(): Unsubscribe {
+    return onSnapshot(doc(this.firestore, 'offer-categories', 'all'), (doc) => {
+      const data = doc.data();
+      if (!data) {
+        this.categories.next([]);
+        return;
+      }
+      this.categories.next(data['categories'] as OfferCategory[]);
+    });
   }
 
-  postCategory(category: OfferCategory): Observable<any> {
-    return of(null);
-  }
-
-  patchCategory(category: OfferCategory): Observable<any> {
-    return of(null);
-  }
-
-  deleteCategory(id: number): Observable<any> {
-    return of(null);
-  }
-
-  postOfferPrice(offerPrice: OfferPrice): Observable<any> {
-    return of(null);
-  }
-
-  patchOfferPrice(offerPrice: OfferPrice): Observable<any> {
-    return of(null);
-  }
-
-  deleteOfferPrice(offerPrice: OfferPrice): Observable<any> {
-    return of(null);
+  saveCategories(categories: OfferCategory[]): Observable<any> {
+    const ref = doc(this.firestore, 'offer-categories', 'all');
+    const promise = setDoc(ref, { categories });
+    return from(promise);
   }
 }

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { Offer, OfferCreated, OfferEditor, OffersWithYears } from '../interfaces/offer.interface';
-import { Observable, Subject, from, of } from 'rxjs';
+import { Offer, OffersWithYears } from '../interfaces/offer.interface';
+import { Observable, from, of } from 'rxjs';
 import { ErrorHandlerService } from './error-handler.service';
 import { addDoc, collection, collectionData, doc, DocumentReference, Firestore, getDoc, orderBy, query, setDoc, where } from '@angular/fire/firestore';
 
@@ -12,7 +12,6 @@ export class OfferService {
   firestore = inject(Firestore);
 
   offers = collection(this.firestore, 'offers');
-  resetFormHotline = new Subject<boolean>();
 
   getOffers(): Observable<Offer[]> {
     return collectionData(query(this.offers, orderBy('year'), orderBy('id')), { idField: 'firebaseId' }) as Observable<Offer[]>;
@@ -27,28 +26,22 @@ export class OfferService {
   }
 
   getOffer(firebaseId: string): Observable<Offer> {
-    const docRef = doc(this.firestore, 'offers', firebaseId);
+    const docRef = doc(this.offers, firebaseId);
     const promise = getDoc(docRef).then((res) => res.data() as Offer);
     return from(promise);
   }
 
-  postOffer(offerEditor: OfferEditor): Observable<DocumentReference> {
-    const promise = addDoc(this.offers, offerEditor.offer);
+  postOffer(offer: Offer): Observable<DocumentReference> {
+    const promise = addDoc(this.offers, offer);
     return from(promise);
   }
 
   patchOffer(offer: Offer): Observable<Offer | void> {
-    console.log(offer);
-
     const docRef = doc(this.firestore, 'offers', offer.firebaseId);
     const promise = setDoc(docRef, offer, { merge: true })
       .then(() => offer)
       .catch((error) => this.errorHandler.handleError(error));
     return from(promise);
-  }
-
-  resetCreateForm(): void {
-    this.resetFormHotline.next(true);
   }
 
   getOffersWithYears(offers: Offer[]): OffersWithYears {

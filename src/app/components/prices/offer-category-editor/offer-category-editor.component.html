@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Kategória {{ data ? "módosítása" : "hozzáadása" }}</h2>
+<h2 mat-dialog-title>Kategória {{ data.editIndex !== undefined ? "módosítása" : "hozzáadása" }}</h2>
 <mat-dialog-content>
   <form [formGroup]="categoryForm" (submit)="handleSubmit()" spellcheck="false">
     <mat-form-field subscriptSizing="dynamic">

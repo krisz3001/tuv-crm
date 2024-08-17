@@ -1,5 +1,5 @@
 import { DatePipe, registerLocaleData } from '@angular/common';
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import localeHu from '@angular/common/locales/hu';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,7 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ClientEditorComponent } from './client-editor/client-editor.component';
 import { Client } from '../../interfaces/client.interface';
 import { ClientService } from '../../services/client.service';
-import { QueryDocumentSnapshot } from '@angular/fire/firestore';
+import { QueryDocumentSnapshot, QuerySnapshot, Unsubscribe } from '@angular/fire/firestore';
 
 registerLocaleData(localeHu, 'hu'); // For displaying correctly with pipes
 
@@ -24,7 +24,7 @@ registerLocaleData(localeHu, 'hu'); // For displaying correctly with pipes
   templateUrl: './clients.component.html',
   styleUrl: './clients.component.css',
 })
-export class ClientsComponent implements OnInit {
+export class ClientsComponent implements OnInit, OnDestroy {
   constructor(
     private clientService: ClientService,
     private router: Router,
@@ -37,7 +37,8 @@ export class ClientsComponent implements OnInit {
   isLoadingResults = true;
 
   limit = 10;
-  lastDoc: QueryDocumentSnapshot | null | undefined;
+  lastDoc?: QueryDocumentSnapshot | null;
+  unsub?: Unsubscribe;
 
   @ViewChild(MatSort)
   sort: MatSort | undefined;
@@ -47,24 +48,18 @@ export class ClientsComponent implements OnInit {
   }
 
   displayClients(): void {
-    this.clientService.getClients(this.limit).subscribe({
-      next: (res) => {
-        console.log('Clients:', res.clients);
-
-        this.clients = res.clients;
-        this.lastDoc = res.clients.length < this.limit ? null : res.lastDoc;
-        this.isLoadingResults = false;
-      },
-      error: (error) => {
-        this.snackBar.open(error.message, undefined, errorSnackbarConfig);
-        this.isLoadingResults = false;
-      },
+    this.unsub?.();
+    this.unsub = this.clientService.getClients(this.limit, (snapshot: QuerySnapshot) => {
+      const docs = snapshot.docs;
+      this.clients = docs.map((doc) => doc.data() as Client);
+      this.lastDoc = docs.length < this.limit ? null : docs[docs.length - 1];
+      this.isLoadingResults = false;
     });
   }
 
   loadMore(): void {
     this.isLoadingResults = true;
-    this.clientService.getClients(this.limit, this.lastDoc!).subscribe({
+    this.clientService.getMoreClients(this.limit, this.lastDoc!).subscribe({
       next: (res) => {
         this.clients = [...this.clients, ...res.clients];
         this.lastDoc = res.clients.length < this.limit ? null : res.lastDoc;
@@ -95,8 +90,6 @@ export class ClientsComponent implements OnInit {
 
   // temporary random client generator
   debugCreateClient(): void {
-    console.log('Creating client...');
-
     this.clientService
       .postClient({
         company: 'Példa Kft',
@@ -104,8 +97,6 @@ export class ClientsComponent implements OnInit {
       } as Client)
       .subscribe({
         next: () => {
-          console.log('Client created!');
-
           this.displayClients();
           this.snackBar.open('Az ügyfél sikeresen létrehozva!', undefined, successSnackbarConfig);
         },
@@ -130,5 +121,9 @@ export class ClientsComponent implements OnInit {
 
   goClientDetails(id: string): void {
     this.router.navigate(['/dashboard/clients', id]);
+  }
+
+  ngOnDestroy(): void {
+    this.unsub?.();
   }
 }

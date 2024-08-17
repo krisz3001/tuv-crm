@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,9 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CurrencyPipe, DatePipe, DecimalPipe, SlicePipe } from '@angular/common';
 import { successSnackbarConfig, errorSnackbarConfig } from '../../../../../helpers';
-import { Offer, OfferEditor } from '../../../interfaces/offer.interface';
-import { SubscriptionCollection } from '../../../interfaces/subscription-collection.interface';
-import { FileService } from '../../../services/file.service';
+import { Offer } from '../../../interfaces/offer.interface';
 import { OfferService } from '../../../services/offer.service';
 import { ConfirmationDialogComponent } from '../../ui/confirmation-dialog/confirmation-dialog.component';
 import { StateIconComponent } from '../../ui/state-icon/state-icon.component';

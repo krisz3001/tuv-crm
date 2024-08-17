@@ -2,7 +2,21 @@ import { inject, Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { Client, ClientPage } from '../interfaces/client.interface';
 import { ErrorHandlerService } from './error-handler.service';
-import { deleteDoc, doc, Firestore, getDoc, getDocs, limit, query, setDoc, startAfter, orderBy, QueryDocumentSnapshot } from '@angular/fire/firestore';
+import {
+  deleteDoc,
+  doc,
+  Firestore,
+  getDoc,
+  getDocs,
+  limit,
+  query,
+  setDoc,
+  startAfter,
+  orderBy,
+  QueryDocumentSnapshot,
+  onSnapshot,
+  Unsubscribe,
+} from '@angular/fire/firestore';
 import { addDoc, collection } from '@firebase/firestore';
 import { OfferService } from './offer.service';
 
@@ -16,7 +30,11 @@ export class ClientService {
 
   clients = collection(this.firestore, 'clients');
 
-  getClients(lim: number, prevDoc?: QueryDocumentSnapshot): Observable<ClientPage> {
+  getClients(lim: number, handler: any): Unsubscribe {
+    return onSnapshot(query(this.clients, orderBy('createdAt'), limit(lim)), handler);
+  }
+
+  getMoreClients(lim: number, prevDoc?: QueryDocumentSnapshot): Observable<ClientPage> {
     let q = query(this.clients, orderBy('createdAt'), limit(lim));
     if (prevDoc) {
       q = query(q, startAfter(prevDoc));
@@ -38,7 +56,7 @@ export class ClientService {
   }
 
   getClient(id: string): Observable<Client> {
-    const docRef = doc(this.firestore, 'clients', id);
+    const docRef = doc(this.clients, id);
     const promise = getDoc(docRef).then((res) => ({ ...res.data(), firebaseId: id }) as Client);
     return from(promise);
   }
@@ -55,7 +73,7 @@ export class ClientService {
   }
 
   patchClient(client: Client): Observable<Client | void> {
-    const docRef = doc(this.firestore, 'clients', client.firebaseId);
+    const docRef = doc(this.clients, client.firebaseId);
     const promise = setDoc(docRef, client, { merge: true })
       .then(() => client)
       .catch((error) => this.errorHandler.handleError(error));
@@ -63,7 +81,7 @@ export class ClientService {
   }
 
   deleteClient(id: string): Observable<void> {
-    const docRef = doc(this.firestore, 'clients', id);
+    const docRef = doc(this.clients, id);
     const promise = deleteDoc(docRef);
     return from(promise);
   }

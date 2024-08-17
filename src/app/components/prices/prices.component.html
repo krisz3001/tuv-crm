@@ -3,34 +3,34 @@
   <section>
     <div class="header">
       <h2>{{ category.name }}</h2>
-      <button mat-button color="primary" (click)="createOfferPrice(category)"><mat-icon>add</mat-icon> Új</button>
-      <button mat-button color="primary" (click)="editCategory(category)"><mat-icon>edit</mat-icon> Szerkesztés</button>
-      <button mat-button color="warn" (click)="deleteCategory(category.id)"><mat-icon>delete</mat-icon> Törlés</button>
+      <button mat-button color="primary" (click)="createOfferOption(category)"><mat-icon>add</mat-icon> Új</button>
+      <button mat-button color="primary" (click)="editCategory($index)"><mat-icon>edit</mat-icon> Szerkesztés</button>
+      <button mat-button color="warn" (click)="deleteCategory($index)"><mat-icon>delete</mat-icon> Törlés</button>
     </div>
     <hr />
-    @if (category.offerPrices.length) {
-      <table mat-table [dataSource]="category.offerPrices">
+    @if (category.offerOptions.length) {
+      <table mat-table [dataSource]="category.offerOptions">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Megnevezés</th>
-          <td mat-cell *matCellDef="let offerPrice">{{ offerPrice.name }}</td>
+          <td mat-cell *matCellDef="let offerOption">{{ offerOption.name }}</td>
         </ng-container>
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef>Leírás</th>
-          <td mat-cell *matCellDef="let offerPrice">{{ offerPrice.description }}</td>
+          <td mat-cell *matCellDef="let offerOption">{{ offerOption.description }}</td>
         </ng-container>
         <ng-container matColumnDef="price">
           <th mat-header-cell *matHeaderCellDef>Ár</th>
-          <td mat-cell *matCellDef="let offerPrice">
-            {{ offerPrice.price | currency: "HUF" : undefined : ".0" : "hu" }}
+          <td mat-cell *matCellDef="let offerOption">
+            {{ offerOption.price | currency: "HUF" : undefined : ".0" : "hu" }}
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Műveletek</th>
-          <td mat-cell *matCellDef="let offerPrice" style="padding: 0">
-            <button mat-icon-button color="primary" (click)="editOfferPrice(offerPrice, category)">
+          <td mat-cell *matCellDef="let offerOption; let i = index" style="padding: 0">
+            <button mat-icon-button color="primary" (click)="editOfferOption(offerOption)">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="deleteOfferPrice(offerPrice)">
+            <button mat-icon-button color="warn" (click)="deleteOfferOption(category, i)">
               <mat-icon>delete</mat-icon>
             </button>
           </td>

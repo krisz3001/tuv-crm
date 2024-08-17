@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Ár {{ data ? "módosítása" : "hozzáadása" }}</h2>
+<h2 mat-dialog-title>Ár {{ data.editOption ? "módosítása" : "hozzáadása" }}</h2>
 <mat-dialog-content>
   <form [formGroup]="categoryForm" (submit)="handleSubmit()" spellcheck="false">
     <mat-form-field subscriptSizing="dynamic">

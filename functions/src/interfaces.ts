@@ -1,22 +1,21 @@
-import { Client } from './client.interface';
-import { Contract } from './contract.interface';
-import { Document } from './document.interface';
+export interface Client {
+  company: string;
+  contact: string;
+}
 
-export interface Offer extends Document {
+export interface Offer {
+  firebaseId: string;
+  id: number;
+  year: number;
+  client: Client;
+  clientId: string;
   subject: string;
   commonAdvisor: string;
   expert: string;
   price: number;
-  client: Client;
   accepted: boolean | null;
-  contract: Contract | null;
   options: OfferOption[];
   comment: string;
-}
-
-export interface OffersWithYears {
-  offers: Offer[];
-  years: number[];
 }
 
 export interface OfferCategory {

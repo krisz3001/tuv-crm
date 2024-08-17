@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ErrorHandlerService } from './error-handler.service';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, catchError, map } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, of } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 import { Certificate } from '../interfaces/certificate.interface';
 
@@ -17,7 +17,7 @@ export class CertificateService {
   certificates: BehaviorSubject<Certificate[]> = new BehaviorSubject<Certificate[]>([]);
 
   getAll(): Observable<any> {
-    return this.http
+    /* return this.http
       .get<Certificate[]>(`${environment.apiUrl}/certificates`, {
         withCredentials: true,
       })
@@ -27,11 +27,12 @@ export class CertificateService {
           this.certificates.next(res);
           return res;
         }),
-      );
+      ); */
+    return of(null);
   }
 
   postCertificate(certificate: Certificate): Observable<any> {
-    return this.http
+    /* return this.http
       .post<Certificate>(`${environment.apiUrl}/certificates`, certificate, {
         withCredentials: true,
       })
@@ -42,6 +43,7 @@ export class CertificateService {
           this.certificates.next(ordered);
           return res;
         }),
-      );
+      ); */
+    return of(null);
   }
 }
