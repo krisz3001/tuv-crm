@@ -16,7 +16,7 @@
   "dependencies": {
     "docx-templates": "^4.13.0",
     "firebase-admin": "^12.1.0",
-    "firebase-functions": "^5.0.0"
+    "firebase-functions": "^5.1.0"
   },
   "devDependencies": {
     "@types/sax": "^1.2.7",

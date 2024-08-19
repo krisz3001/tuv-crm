@@ -1,4 +1,7 @@
 export interface Expert {
-  id: number;
-  fullname: string;
+  firebaseId: number;
+  name: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -15,7 +15,7 @@
     <input matInput formControlName="expert" name="expert" (input)="filterExperts()" (focus)="filterExperts()" [matAutocomplete]="auto" required />
     <mat-autocomplete #auto="matAutocomplete">
       @for (option of experts; track option) {
-        <mat-option [value]="option.fullname">{{ option.fullname }}</mat-option>
+        <mat-option [value]="option.name">{{ option.name }}</mat-option>
       }
     </mat-autocomplete>
     @if (expert.errors?.["required"]) {

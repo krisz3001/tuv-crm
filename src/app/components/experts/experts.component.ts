@@ -1,11 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { errorSnackbarConfig } from '../../../../helpers';
 import { Expert } from '../../interfaces/expert.interface';
-import { SubscriptionCollection } from '../../interfaces/subscription-collection.interface';
 import { ExpertService } from '../../services/expert.service';
+import { QueryDocumentSnapshot, Unsubscribe } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-experts',
@@ -14,27 +12,22 @@ import { ExpertService } from '../../services/expert.service';
   templateUrl: './experts.component.html',
   styleUrl: './experts.component.css',
 })
-export class ExpertsComponent implements OnInit {
-  constructor(
-    private expertService: ExpertService,
-    private snackBar: MatSnackBar,
-  ) {}
+export class ExpertsComponent implements OnInit, OnDestroy {
+  constructor(private expertService: ExpertService) {}
 
   experts: Expert[] = [];
   isLoadingResults = true;
-  displayedColumns: string[] = ['id', 'fullname'];
-  subs: SubscriptionCollection = {};
+  displayedColumns: string[] = ['name', 'email'];
+  unsub: Unsubscribe = () => {};
 
   ngOnInit(): void {
-    this.expertService.getAllExperts().subscribe({
-      next: (experts) => {
-        this.experts = experts;
-        this.isLoadingResults = false;
-      },
-      error: (error) => {
-        this.snackBar.open(error, undefined, errorSnackbarConfig);
-        this.isLoadingResults = false;
-      },
+    this.unsub = this.expertService.getExpertsRealtime((docs: QueryDocumentSnapshot[]) => {
+      this.experts = docs.map((doc) => doc.data() as Expert);
+      this.isLoadingResults = false;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.unsub();
   }
 }

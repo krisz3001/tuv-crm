@@ -24,3 +24,15 @@ export const handleClientUpdate = functions.firestore.document('clients/{clientI
 // Offers
 export const handleOfferCreate = functions.firestore.document('offers/{offerId}').onCreate(createOffer);
 export const handleOfferUpdate = functions.firestore.document('offers/{offerId}').onUpdate(handleDocumentUpdate);
+
+// Experts
+export const onUserRegister = functions.auth.user().onCreate(async (user, context) => {
+  functions.logger.info('User created', user);
+  await db.collection('experts').doc(user.uid).set({
+    name: 'Anonymous',
+    email: user.email,
+    firebaseId: user.uid,
+    createdAt: context.timestamp,
+    updatedAt: context.timestamp,
+  });
+});

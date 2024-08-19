@@ -1,17 +1,23 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ErrorHandlerService } from './error-handler.service';
-import { Expert } from '../interfaces/expert.interface';
-import { Observable, catchError, map, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment.development';
+import { collection, doc, Firestore, onSnapshot, Unsubscribe, updateDoc } from '@angular/fire/firestore';
+import { catchError, from, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExpertService {
-  experts: Expert[] = [];
+  errorHandler = inject(ErrorHandlerService);
+  firestore = inject(Firestore);
 
-  getAllExperts(): Observable<Expert[]> {
-    return of(this.experts);
+  experts = collection(this.firestore, 'experts');
+
+  getExpertsRealtime(handler: CallableFunction): Unsubscribe {
+    return onSnapshot(this.experts, (snapshot) => handler(snapshot.docs));
+  }
+
+  updateExpertName(id: string, name: string): Promise<void> {
+    const expert = doc(this.experts, id);
+    return updateDoc(expert, { name }).catch(this.errorHandler.handleError);
   }
 }

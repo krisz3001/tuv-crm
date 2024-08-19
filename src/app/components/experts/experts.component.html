@@ -13,14 +13,19 @@
 @if (experts.length > 0) {
   <div class="table-wrapper">
     <table mat-table [dataSource]="experts">
-      <ng-container matColumnDef="id">
+      <ng-container matColumnDef="firebaseId">
         <th mat-header-cell *matHeaderCellDef>ID</th>
-        <td mat-cell *matCellDef="let expert">{{ expert.id }}</td>
+        <td mat-cell *matCellDef="let expert">{{ expert.firebaseId }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="fullname">
+      <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Teljes név</th>
-        <td mat-cell *matCellDef="let expert">{{ expert.fullname }}</td>
+        <td mat-cell *matCellDef="let expert">{{ expert.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let expert">{{ expert.email }}</td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

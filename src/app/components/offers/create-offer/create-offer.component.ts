@@ -8,6 +8,7 @@ import { Expert } from '../../../interfaces/expert.interface';
 import { ExpertService } from '../../../services/expert.service';
 import { Offer } from '../../../interfaces/offer.interface';
 import { Subscription } from 'rxjs';
+import { QueryDocumentSnapshot, Unsubscribe } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-create-offer',
@@ -24,6 +25,7 @@ export class CreateOfferComponent implements OnInit, OnChanges, OnDestroy {
 
   experts: Expert[] = [];
   filteredExperts: Expert[] = [];
+  expertsUnsub: Unsubscribe = () => {};
 
   form = new FormGroup({
     subject: new FormControl('', Validators.required),
@@ -33,9 +35,9 @@ export class CreateOfferComponent implements OnInit, OnChanges, OnDestroy {
   formSub: Subscription = new Subscription();
 
   ngOnInit(): void {
-    this.expertService.getAllExperts().subscribe((experts) => {
-      this.experts = experts;
-      this.filteredExperts = experts.slice();
+    this.expertsUnsub = this.expertService.getExpertsRealtime((docs: QueryDocumentSnapshot[]) => {
+      this.experts = docs.map((doc) => doc.data() as Expert);
+      this.filteredExperts = this.experts;
     });
     this.formSub = this.form.valueChanges.subscribe((values: any) => {
       for (const key in values) {
@@ -53,7 +55,7 @@ export class CreateOfferComponent implements OnInit, OnChanges, OnDestroy {
 
   filterExperts(): void {
     const filterValue = this.offer.expert ? this.offer.expert.toLowerCase() : '';
-    this.filteredExperts = this.experts.filter((expert) => expert.fullname.toLowerCase().includes(filterValue));
+    this.filteredExperts = this.experts.filter((expert) => expert.name.toLowerCase().includes(filterValue));
   }
 
   get subject() {
@@ -70,5 +72,6 @@ export class CreateOfferComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     this.formSub.unsubscribe();
+    this.expertsUnsub();
   }
 }

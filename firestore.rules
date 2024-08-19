@@ -11,11 +11,19 @@ service cloud.firestore {
     client.contact is string
   }
 
-  function offerValid(offer) {
+  function offerIsValid(offer) {
     return offer.subject is string &&
     offer.commonAdvisor is string &&
     offer.expert is string &&
     offer.price is number
+  }
+
+  function expertIsValid(expert) {
+    return expert.name is string &&
+    expert.email is string &&
+    expert.firebaseId is string &&
+    expert.createdAt is timestamp &&
+    expert.updatedAt is timestamp
   }
 
   match /databases/{database}/documents {
@@ -37,13 +45,19 @@ service cloud.firestore {
 
     match /offers/{offerId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && offerValid(request.resource.data);
+      allow create: if isSignedIn() && offerIsValid(request.resource.data);
       allow update: if isSignedIn();
       allow delete: if isSignedIn();
     }
 
     match /offer-categories/{categoryId} {
       allow read, write: if isSignedIn();
+    }
+
+    match /experts/{expertId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && expertIsValid(request.resource.data);
+      allow update: if isSignedIn() && request.resource.data.name is string;
     }
   }
 }

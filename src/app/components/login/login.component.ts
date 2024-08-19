@@ -17,7 +17,10 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: '../../styles/auth.component.css',
 })
 export class LoginComponent {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   messages = MESSAGES;
   passwordMinLength = CONFIG.PasswordMinLength;
@@ -36,6 +39,7 @@ export class LoginComponent {
     const credentials: Credentials = {
       email: this.loginForm.get('email')?.value!,
       password: this.loginForm.get('password')?.value!,
+      fullname: '',
     };
 
     this.authService.login(credentials).subscribe({
