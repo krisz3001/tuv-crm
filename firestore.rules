@@ -18,14 +18,6 @@ service cloud.firestore {
     offer.price is number
   }
 
-  function expertIsValid(expert) {
-    return expert.name is string &&
-    expert.email is string &&
-    expert.firebaseId is string &&
-    expert.createdAt is timestamp &&
-    expert.updatedAt is timestamp
-  }
-
   match /databases/{database}/documents {
 
     match /clients {
@@ -55,9 +47,7 @@ service cloud.firestore {
     }
 
     match /experts/{expertId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() && expertIsValid(request.resource.data);
-      allow update: if isSignedIn() && request.resource.data.name is string;
+      allow read, write: if isSignedIn();
     }
   }
 }

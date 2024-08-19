@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ErrorHandlerService } from './error-handler.service';
-import { collection, doc, Firestore, onSnapshot, Unsubscribe, updateDoc } from '@angular/fire/firestore';
-import { catchError, from, Observable } from 'rxjs';
+import { collection, doc, Firestore, onSnapshot, setDoc, Unsubscribe } from '@angular/fire/firestore';
+import { from, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -16,8 +16,8 @@ export class ExpertService {
     return onSnapshot(this.experts, (snapshot) => handler(snapshot.docs));
   }
 
-  updateExpertName(id: string, name: string): Promise<void> {
+  updateExpertName(id: string, name: string): Observable<void> {
     const expert = doc(this.experts, id);
-    return updateDoc(expert, { name }).catch(this.errorHandler.handleError);
+    return from(setDoc(expert, { name }, { merge: true }).catch(this.errorHandler.handleError));
   }
 }

@@ -1,5 +1,12 @@
 {
   "projects": {
     "default": "tuv-crm"
-  }
+  },
+  "targets": {},
+  "etags": {
+    "tuv-crm": {
+      "extensionInstances": {}
+    }
+  },
+  "dataconnectEmulatorConfig": {}
 }

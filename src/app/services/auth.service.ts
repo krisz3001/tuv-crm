@@ -19,11 +19,14 @@ export class AuthService {
 
   register(credentials: Credentials): Observable<void> {
     const promise = createUserWithEmailAndPassword(this.firebaseAuth, credentials.email, credentials.password)
-      .then(async (res) => {
-        await updateProfile(res.user, { displayName: credentials.fullname });
-        return res.user;
+      .then((res) => {
+        this.expertService.updateExpertName(res.user.uid, credentials.fullname).subscribe({
+          error: (err) => {
+            console.log(err);
+          },
+        });
+        return updateProfile(res.user, { displayName: credentials.fullname });
       })
-      .then((user) => this.expertService.updateExpertName(user.uid, credentials.fullname))
       .catch((error) => this.errorHandler.handleError(error));
     return from(promise);
   }
