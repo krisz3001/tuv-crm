@@ -52,7 +52,7 @@ export class ConstructOfferComponent implements OnInit, OnDestroy {
   readonly dialog = inject(MatDialog);
 
   offerForm: any[] = [];
-  offerState: boolean | null = false;
+  offerState: boolean = false;
   documentState: boolean = false;
 
   offer: Offer = {} as Offer;
@@ -155,7 +155,7 @@ export class ConstructOfferComponent implements OnInit, OnDestroy {
     this.generationStage = 20;
     this.offerService.postOffer(this.offer).subscribe({
       next: (res) => {
-        this.generationStage = 40;
+        this.generationStage = 75;
         this.createdUnsub?.();
         this.createdUnsub = this.offerService.getOfferUpdates(res.id, (doc: DocumentSnapshot) => {
           this.createdOffer = doc.data() as Offer;

@@ -1,12 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Expert } from '../../../interfaces/expert.interface';
-import { Offer } from '../../../interfaces/offer.interface';
 import { ExpertService } from '../../../services/expert.service';
+import { Offer } from '../../../interfaces/offer.interface';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-create-offer',
@@ -15,7 +16,7 @@ import { ExpertService } from '../../../services/expert.service';
   templateUrl: './create-offer.component.html',
   styleUrl: './create-offer.component.css',
 })
-export class CreateOfferComponent implements OnInit {
+export class CreateOfferComponent implements OnInit, OnChanges, OnDestroy {
   constructor(private expertService: ExpertService) {}
 
   @Input() offer!: Offer;
@@ -24,19 +25,50 @@ export class CreateOfferComponent implements OnInit {
   experts: Expert[] = [];
   filteredExperts: Expert[] = [];
 
+  form = new FormGroup({
+    subject: new FormControl('', Validators.required),
+    commonAdvisor: new FormControl(''),
+    expert: new FormControl('', Validators.required),
+  });
+  formSub: Subscription = new Subscription();
+
   ngOnInit(): void {
     this.expertService.getAllExperts().subscribe((experts) => {
       this.experts = experts;
       this.filteredExperts = experts.slice();
     });
+    this.formSub = this.form.valueChanges.subscribe((values: any) => {
+      for (const key in values) {
+        if (values[key] !== null) {
+          (this.offer as any)[key] = values[key];
+        }
+      }
+      this.valid.emit(this.offer.subject.length > 0 && this.offer.expert.length > 0);
+    });
   }
 
-  handleChange(): void {
-    this.valid.emit(this.offer.subject.length > 0 && this.offer.expert.length > 0);
+  ngOnChanges(): void {
+    this.form.reset();
   }
 
   filterExperts(): void {
     const filterValue = this.offer.expert ? this.offer.expert.toLowerCase() : '';
     this.filteredExperts = this.experts.filter((expert) => expert.fullname.toLowerCase().includes(filterValue));
+  }
+
+  get subject() {
+    return this.form.get('subject')!;
+  }
+
+  get commonAdvisor() {
+    return this.form.get('commonAdvisor')!;
+  }
+
+  get expert() {
+    return this.form.get('expert')!;
+  }
+
+  ngOnDestroy(): void {
+    this.formSub.unsubscribe();
   }
 }

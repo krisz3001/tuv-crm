@@ -1,12 +1,12 @@
 <button mat-icon-button (click)="drawer.toggle()" class="btn-close">
   <mat-icon>close</mat-icon>
 </button>
-<h1>Ajánlat adatai<app-state-icon [state]="offerState ? true : null"></app-state-icon></h1>
+<h1>Ajánlat adatai<app-state-icon [state]="offerState ? true : null" /></h1>
 <hr class="w-full" />
-<app-create-offer [offer]="offer" (valid)="offerState = $event"></app-create-offer>
+<app-create-offer [offer]="offer" (valid)="offerState = $event" />
 <h1>
   <span>Dokumentum összeállítása</span>
-  <app-state-icon [state]="documentState ? true : null"></app-state-icon>
+  <app-state-icon [state]="documentState ? true : null" />
   <button mat-button color="primary" (click)="editPrices()"><mat-icon>edit</mat-icon>Árak módosítása</button>
 </h1>
 <hr class="w-full" />
@@ -44,7 +44,7 @@
         @case (20) {
           <span>Ajánlat létrehozása...</span>
         }
-        @case (40) {
+        @case (75) {
           <span>Fájl generálása...</span>
         }
         @case (100) {
@@ -55,7 +55,7 @@
         }
       }
       @if (generationStage < 100) {
-        <mat-progress-bar mode="determinate" [value]="generationStage"></mat-progress-bar>
+        <mat-progress-bar mode="determinate" [value]="generationStage" />
       }
     }
   </div>
