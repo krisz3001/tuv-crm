@@ -33,9 +33,30 @@
   </mat-form-field>
   <div class="btn-panel">
     <button mat-raised-button color="primary" class="btn-generate" [disabled]="!offerState || !documentState">Dokumentum kiállítása</button>
-    @if (createdOffer) {
-      <!-- <button mat-raised-button color="primary" type="button" (click)="downloadOffer()"><mat-icon>download</mat-icon>Letöltés</button> -->
+    @if (generationStage === 100) {
+      <button mat-raised-button color="primary" type="button" (click)="downloadOffer()"><mat-icon>download</mat-icon>Letöltés</button>
       <button mat-raised-button color="accent" type="button" (click)="goOfferDetails()"><mat-icon>open_in_new</mat-icon>Ajánlat megtekintése</button>
+    }
+  </div>
+  <div class="progress">
+    @if (generationStage > 0) {
+      @switch (generationStage) {
+        @case (20) {
+          <span>Ajánlat létrehozása...</span>
+        }
+        @case (40) {
+          <span>Fájl generálása...</span>
+        }
+        @case (100) {
+          <div class="generation-result">
+            <span>Ajánlat elkészült!</span>
+            <app-state-icon [state]="true" />
+          </div>
+        }
+      }
+      @if (generationStage < 100) {
+        <mat-progress-bar mode="determinate" [value]="generationStage"></mat-progress-bar>
+      }
     }
   </div>
 </form>

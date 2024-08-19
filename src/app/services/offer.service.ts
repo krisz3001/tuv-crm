@@ -42,8 +42,6 @@ export class OfferService {
   getOffer(firebaseId: string): Observable<Offer> {
     const docRef = doc(this.offers, firebaseId);
     const promise = getDoc(docRef).then((res) => {
-      console.log(res.data());
-
       return res.data() as Offer;
     });
     return from(promise);

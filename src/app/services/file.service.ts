@@ -31,7 +31,7 @@ export class FileService {
       .then((url) => {
         const xhr = new XMLHttpRequest();
         xhr.responseType = 'blob';
-        xhr.onload = (event) => {
+        xhr.onload = () => {
           saveFile(xhr.response, ref.name);
         };
         xhr.open('GET', url);
@@ -39,6 +39,10 @@ export class FileService {
       })
       .catch((error) => this.errorHandler.handleError(error));
     return from(promise);
+  }
+
+  getFileRef(path: string) {
+    return ref(this.storage, path);
   }
 
   uploadFile(document: Document, file: globalThis.File): Observable<any> {

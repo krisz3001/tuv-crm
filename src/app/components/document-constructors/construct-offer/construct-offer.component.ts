@@ -17,11 +17,24 @@ import { StateIconComponent } from '../../ui/state-icon/state-icon.component';
 import { PricesComponent } from '../../prices/prices.component';
 import { PriceService } from '../../../services/price.service';
 import { DocumentSnapshot, Unsubscribe } from '@angular/fire/firestore';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { FileService } from '../../../services/file.service';
 
 @Component({
   selector: 'app-construct-offer',
   standalone: true,
-  imports: [MatInputModule, MatButtonModule, FormsModule, MatCheckboxModule, MatIconModule, CreateOfferComponent, StateIconComponent],
+  imports: [
+    MatInputModule,
+    MatButtonModule,
+    FormsModule,
+    MatCheckboxModule,
+    MatIconModule,
+    CreateOfferComponent,
+    StateIconComponent,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
+  ],
   templateUrl: './construct-offer.component.html',
   styleUrl: './construct-offer.component.css',
 })
@@ -29,6 +42,7 @@ export class ConstructOfferComponent implements OnInit, OnDestroy {
   constructor(
     private priceService: PriceService,
     private offerService: OfferService,
+    private fileService: FileService,
     private snackBar: MatSnackBar,
     private router: Router,
   ) {}
@@ -42,9 +56,10 @@ export class ConstructOfferComponent implements OnInit, OnDestroy {
   documentState: boolean = false;
 
   offer: Offer = {} as Offer;
-  createdOffer: string | null = null;
+  createdOffer: Offer | null = null;
+  generationStage: number = 0; // To show the progress of the offer generation
   categories: OfferCategory[] = [];
-  unsub!: Unsubscribe;
+  priceUnsub?: Unsubscribe;
   createdUnsub?: Unsubscribe;
 
   ngOnInit(): void {
@@ -59,7 +74,7 @@ export class ConstructOfferComponent implements OnInit, OnDestroy {
         this.offerForm.push({ ...category, selected: false });
       });
     });
-    this.unsub = this.priceService.getCategories();
+    this.priceUnsub = this.priceService.getCategories();
   }
 
   toggleCategory(index: number): void {
@@ -137,16 +152,19 @@ export class ConstructOfferComponent implements OnInit, OnDestroy {
     this.offer.clientId = this.client.firebaseId;
     this.offer.client = this.client;
 
+    this.generationStage = 20;
     this.offerService.postOffer(this.offer).subscribe({
       next: (res) => {
-        console.log(res.id);
-        this.createdOffer = res.id;
+        this.generationStage = 40;
         this.createdUnsub?.();
         this.createdUnsub = this.offerService.getOfferUpdates(res.id, (doc: DocumentSnapshot) => {
-          console.log(doc.data());
+          this.createdOffer = doc.data() as Offer;
+          if (this.createdOffer.initialFilePath) {
+            this.generationStage = 100;
+            this.snackBar.open('Ajánlat sikeresen kiállítva!', undefined, successSnackbarConfig);
+            this.resetForm();
+          }
         });
-        this.snackBar.open('Ajánlat sikeresen kiállítva!', undefined, successSnackbarConfig);
-        this.resetForm();
       },
       error: (error) => {
         this.snackBar.open(error.message, undefined, errorSnackbarConfig);
@@ -155,13 +173,13 @@ export class ConstructOfferComponent implements OnInit, OnDestroy {
   }
 
   downloadOffer(): void {
-    //if (!this.createdOffer) return; // TODO: Implement download
+    if (!this.createdOffer?.initialFilePath) return;
+    this.fileService.downloadFile(this.fileService.getFileRef(this.createdOffer.initialFilePath)).subscribe();
   }
 
   goOfferDetails(): void {
     if (!this.createdOffer) return;
-
-    this.router.navigate([`dashboard/offers/${this.createdOffer}`]);
+    this.router.navigate([`dashboard/offers/${this.createdOffer.firebaseId}`]);
   }
 
   editPrices(): void {
@@ -175,6 +193,7 @@ export class ConstructOfferComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.unsub();
+    this.priceUnsub?.();
+    this.createdUnsub?.();
   }
 }

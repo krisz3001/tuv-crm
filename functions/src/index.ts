@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { createOffer } from './offers';
-import { assignTimestamps, handleDocumentUpdate } from './timestamps';
+import { handleDocumentUpdate } from './timestamps';
 
 admin.initializeApp();
 export const db = admin.firestore();
@@ -10,7 +10,13 @@ export const db = admin.firestore();
 
 // Clients
 export const handleClientCreate = functions.firestore.document('clients/{clientId}').onCreate(async (snap, context) => {
-  await assignTimestamps(snap);
+  await db.runTransaction(async (transaction) => {
+    transaction.update(snap.ref, {
+      firebaseId: snap.id,
+      createdAt: snap.createTime,
+      updatedAt: snap.createTime,
+    });
+  });
 });
 
 export const handleClientUpdate = functions.firestore.document('clients/{clientId}').onUpdate(handleDocumentUpdate);

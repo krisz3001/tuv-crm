@@ -41,3 +41,17 @@ form {
   align-items: center;
   gap: 10px;
 }
+
+.progress {
+  width: 200px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.generation-result {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}

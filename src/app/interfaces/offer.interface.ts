@@ -12,6 +12,7 @@ export interface Offer extends Document {
   contract: Contract | null;
   options: OfferOption[];
   comment: string;
+  initialFilePath?: string;
 }
 
 export interface OffersWithYears {
