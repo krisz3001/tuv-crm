@@ -1,5 +1,5 @@
 import { DatePipe, registerLocaleData } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import localeHu from '@angular/common/locales/hu';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,7 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ClientEditorComponent } from './client-editor/client-editor.component';
 import { Client } from '../../interfaces/client.interface';
 import { ClientService } from '../../services/client.service';
-import { QueryDocumentSnapshot, QuerySnapshot, Unsubscribe } from '@angular/fire/firestore';
+import { QueryDocumentSnapshot } from '@angular/fire/firestore';
 
 registerLocaleData(localeHu, 'hu'); // For displaying correctly with pipes
 
@@ -24,7 +24,7 @@ registerLocaleData(localeHu, 'hu'); // For displaying correctly with pipes
   templateUrl: './clients.component.html',
   styleUrl: './clients.component.css',
 })
-export class ClientsComponent implements OnInit, OnDestroy {
+export class ClientsComponent implements OnInit {
   constructor(
     private clientService: ClientService,
     private router: Router,
@@ -37,8 +37,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
   isLoadingResults = true;
 
   limit = 10;
-  lastDoc?: QueryDocumentSnapshot | null;
-  unsub?: Unsubscribe;
+  lastDoc: QueryDocumentSnapshot | null = null;
 
   @ViewChild(MatSort)
   sort: MatSort | undefined;
@@ -48,18 +47,17 @@ export class ClientsComponent implements OnInit, OnDestroy {
   }
 
   displayClients(): void {
-    this.unsub?.();
-    this.unsub = this.clientService.getClients(this.limit, (snapshot: QuerySnapshot) => {
-      const docs = snapshot.docs;
-      this.clients = docs.map((doc) => doc.data() as Client);
-      this.lastDoc = docs.length < this.limit ? null : docs[docs.length - 1];
+    this.isLoadingResults = true;
+    this.clientService.getClients(this.limit).subscribe((page) => {
+      this.clients = page.clients;
+      this.lastDoc = page.clients.length < this.limit ? null : page.lastDoc;
       this.isLoadingResults = false;
     });
   }
 
   loadMore(): void {
     this.isLoadingResults = true;
-    this.clientService.getMoreClients(this.limit, this.lastDoc!).subscribe({
+    this.clientService.getClients(this.limit, this.lastDoc!).subscribe({
       next: (res) => {
         this.clients = [...this.clients, ...res.clients];
         this.lastDoc = res.clients.length < this.limit ? null : res.lastDoc;
@@ -121,9 +119,5 @@ export class ClientsComponent implements OnInit, OnDestroy {
 
   goClientDetails(id: string): void {
     this.router.navigate(['/dashboard/clients', id]);
-  }
-
-  ngOnDestroy(): void {
-    this.unsub?.();
   }
 }

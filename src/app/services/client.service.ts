@@ -2,21 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { Client, ClientPage } from '../interfaces/client.interface';
 import { ErrorHandlerService } from './error-handler.service';
-import {
-  deleteDoc,
-  doc,
-  Firestore,
-  getDoc,
-  getDocs,
-  limit,
-  query,
-  setDoc,
-  startAfter,
-  orderBy,
-  QueryDocumentSnapshot,
-  onSnapshot,
-  Unsubscribe,
-} from '@angular/fire/firestore';
+import { deleteDoc, doc, Firestore, getDoc, getDocs, limit, query, setDoc, startAfter, orderBy, QueryDocumentSnapshot } from '@angular/fire/firestore';
 import { addDoc, collection } from '@firebase/firestore';
 import { OfferService } from './offer.service';
 
@@ -30,11 +16,7 @@ export class ClientService {
 
   clients = collection(this.firestore, 'clients');
 
-  getClients(lim: number, handler: any): Unsubscribe {
-    return onSnapshot(query(this.clients, orderBy('createdAt'), limit(lim)), handler);
-  }
-
-  getMoreClients(lim: number, prevDoc?: QueryDocumentSnapshot): Observable<ClientPage> {
+  getClients(lim: number, prevDoc?: QueryDocumentSnapshot): Observable<ClientPage> {
     let q = query(this.clients, orderBy('createdAt'), limit(lim));
     if (prevDoc) {
       q = query(q, startAfter(prevDoc));

@@ -8,7 +8,7 @@ import { getStorage } from 'firebase-admin/storage';
 import { Offer } from './interfaces';
 
 // Generates a DOCX file for the offer
-export async function generateDocx(offer: Offer) {
+export async function generateDocx(offer: Offer): Promise<void> {
   const template = fs.readFileSync('templates/offer.docx');
 
   const buffer = await createReport({

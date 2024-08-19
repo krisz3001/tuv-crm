@@ -16,7 +16,7 @@ import { CreateOfferComponent } from '../../offers/create-offer/create-offer.com
 import { StateIconComponent } from '../../ui/state-icon/state-icon.component';
 import { PricesComponent } from '../../prices/prices.component';
 import { PriceService } from '../../../services/price.service';
-import { Unsubscribe } from '@angular/fire/firestore';
+import { DocumentSnapshot, Unsubscribe } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-construct-offer',
@@ -45,6 +45,7 @@ export class ConstructOfferComponent implements OnInit, OnDestroy {
   createdOffer: string | null = null;
   categories: OfferCategory[] = [];
   unsub!: Unsubscribe;
+  createdUnsub?: Unsubscribe;
 
   ngOnInit(): void {
     this.resetForm();
@@ -140,6 +141,10 @@ export class ConstructOfferComponent implements OnInit, OnDestroy {
       next: (res) => {
         console.log(res.id);
         this.createdOffer = res.id;
+        this.createdUnsub?.();
+        this.createdUnsub = this.offerService.getOfferUpdates(res.id, (doc: DocumentSnapshot) => {
+          console.log(doc.data());
+        });
         this.snackBar.open('Ajánlat sikeresen kiállítva!', undefined, successSnackbarConfig);
         this.resetForm();
       },

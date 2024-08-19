@@ -2,7 +2,21 @@ import { inject, Injectable } from '@angular/core';
 import { Offer, OffersWithYears } from '../interfaces/offer.interface';
 import { Observable, from, of } from 'rxjs';
 import { ErrorHandlerService } from './error-handler.service';
-import { addDoc, collection, collectionData, doc, DocumentReference, Firestore, getDoc, orderBy, query, setDoc, where } from '@angular/fire/firestore';
+import {
+  addDoc,
+  collection,
+  collectionData,
+  doc,
+  DocumentReference,
+  Firestore,
+  getDoc,
+  onSnapshot,
+  orderBy,
+  query,
+  setDoc,
+  Unsubscribe,
+  where,
+} from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -27,8 +41,17 @@ export class OfferService {
 
   getOffer(firebaseId: string): Observable<Offer> {
     const docRef = doc(this.offers, firebaseId);
-    const promise = getDoc(docRef).then((res) => res.data() as Offer);
+    const promise = getDoc(docRef).then((res) => {
+      console.log(res.data());
+
+      return res.data() as Offer;
+    });
     return from(promise);
+  }
+
+  getOfferUpdates(firebaseId: string, handler: any): Unsubscribe {
+    const ref = doc(this.offers, firebaseId);
+    return onSnapshot(ref, handler);
   }
 
   postOffer(offer: Offer): Observable<DocumentReference> {
