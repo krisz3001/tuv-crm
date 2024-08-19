@@ -1,4 +1,12 @@
-<div class="actions">
+<form class="actions">
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Keresés</mat-label>
+    <input matInput name="search" [(ngModel)]="searchTerm" />
+  </mat-form-field>
+  <button mat-raised-button aria-label="Search client" color="primary" (click)="getClients()">
+    <mat-icon>search</mat-icon>
+    Keresés
+  </button>
   <button mat-raised-button aria-label="New client button" color="primary" (click)="createClient()">
     <mat-icon>add</mat-icon>
     Új ügyfél
@@ -7,13 +15,13 @@
     <mat-icon>add</mat-icon>
     Új random ügyfél (debug)
   </button>
-</div>
-@if (isLoadingResults) {
+</form>
+@if (isLoading) {
   <div class="container-spinner">
     <mat-spinner></mat-spinner>
   </div>
 }
-@if (!isLoadingResults && clients.length === 0) {
+@if (!isLoading && clients.length === 0) {
   <p class="text-center" style="margin-left: 20px">Az ügyfelek listája üres</p>
 }
 @if (clients.length > 0) {

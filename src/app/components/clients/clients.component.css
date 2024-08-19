@@ -18,8 +18,8 @@
 
 .actions {
   display: flex;
-  padding: 20px;
-  align-items: end;
+  padding: 10px;
+  align-items: center;
   gap: 10px;
 }
 

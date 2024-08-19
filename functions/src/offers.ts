@@ -51,6 +51,7 @@ export async function createOffer(snap: DocumentSnapshot) {
       year: currentYear,
       id: newId,
       accepted: null,
+      contract: null,
       createdAt: snap.createTime,
       updatedAt: snap.createTime,
     });

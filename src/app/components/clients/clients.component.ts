@@ -1,5 +1,5 @@
 import { DatePipe, registerLocaleData } from '@angular/common';
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import localeHu from '@angular/common/locales/hu';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,18 +13,21 @@ import { MatDialog } from '@angular/material/dialog';
 import { ClientEditorComponent } from './client-editor/client-editor.component';
 import { Client } from '../../interfaces/client.interface';
 import { ClientService } from '../../services/client.service';
-import { QueryDocumentSnapshot } from '@angular/fire/firestore';
+import { QueryDocumentSnapshot, Unsubscribe } from '@angular/fire/firestore';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 
 registerLocaleData(localeHu, 'hu'); // For displaying correctly with pipes
 
 @Component({
   selector: 'app-clients',
   standalone: true,
-  imports: [MatTableModule, MatButtonModule, MatIconModule, MatSortModule, MatProgressSpinnerModule, DatePipe],
+  imports: [MatTableModule, MatButtonModule, MatIconModule, MatSortModule, MatProgressSpinnerModule, DatePipe, MatFormFieldModule, MatInputModule, FormsModule],
   templateUrl: './clients.component.html',
   styleUrl: './clients.component.css',
 })
-export class ClientsComponent implements OnInit {
+export class ClientsComponent implements OnInit, OnDestroy {
   constructor(
     private clientService: ClientService,
     private router: Router,
@@ -32,40 +35,44 @@ export class ClientsComponent implements OnInit {
   ) {}
 
   readonly dialog = inject(MatDialog);
-  displayedColumns: string[] = ['company', 'contact', 'createdAt', 'updatedAt'];
-  clients: Client[] = [];
-  isLoadingResults = true;
-
-  limit = 10;
-  lastDoc: QueryDocumentSnapshot | null = null;
-
   @ViewChild(MatSort)
   sort: MatSort | undefined;
 
+  isLoading = true;
+  unsub: Unsubscribe = () => {}; // Realtime listener for clients, unsubscribing on destroy or on search
+
+  limit = 10;
+  searchTerm = '';
+  lastDoc: QueryDocumentSnapshot | null = null; // For pagination, null if last page was less than limit
+
+  clients: Client[] = [];
+  displayedColumns: string[] = ['company', 'contact', 'createdAt', 'updatedAt'];
+
   ngOnInit(): void {
-    this.displayClients();
+    this.getClients();
   }
 
-  displayClients(): void {
-    this.isLoadingResults = true;
-    this.clientService.getClients(this.limit).subscribe((page) => {
-      this.clients = page.clients;
-      this.lastDoc = page.clients.length < this.limit ? null : page.lastDoc;
-      this.isLoadingResults = false;
+  getClients(): void {
+    this.unsub();
+    this.isLoading = true;
+    this.unsub = this.clientService.getClientsRealtime(this.limit, this.searchTerm, (docs: QueryDocumentSnapshot[]) => {
+      this.clients = docs.map((doc) => doc.data() as Client);
+      this.clients.length < this.limit ? (this.lastDoc = null) : (this.lastDoc = docs[docs.length - 1]);
+      this.isLoading = false;
     });
   }
 
   loadMore(): void {
-    this.isLoadingResults = true;
-    this.clientService.getClients(this.limit, this.lastDoc!).subscribe({
+    this.isLoading = true;
+    this.clientService.getMoreClients(this.limit, this.searchTerm, this.lastDoc!).subscribe({
       next: (res) => {
         this.clients = [...this.clients, ...res.clients];
         this.lastDoc = res.clients.length < this.limit ? null : res.lastDoc;
-        this.isLoadingResults = false;
+        this.isLoading = false;
       },
       error: (error) => {
         this.snackBar.open(error.message, undefined, errorSnackbarConfig);
-        this.isLoadingResults = false;
+        this.isLoading = false;
       },
     });
   }
@@ -74,16 +81,9 @@ export class ClientsComponent implements OnInit {
     if (this.dialog.openDialogs.length) {
       return;
     }
-    this.dialog
-      .open(ClientEditorComponent, {
-        width: '350px',
-      })
-      .afterClosed()
-      .subscribe((created) => {
-        if (created) {
-          this.displayClients();
-        }
-      });
+    this.dialog.open(ClientEditorComponent, {
+      width: '350px',
+    });
   }
 
   // temporary random client generator
@@ -95,7 +95,6 @@ export class ClientsComponent implements OnInit {
       } as Client)
       .subscribe({
         next: () => {
-          this.displayClients();
           this.snackBar.open('Az ügyfél sikeresen létrehozva!', undefined, successSnackbarConfig);
         },
         error: (error) => {
@@ -119,5 +118,9 @@ export class ClientsComponent implements OnInit {
 
   goClientDetails(id: string): void {
     this.router.navigate(['/dashboard/clients', id]);
+  }
+
+  ngOnDestroy(): void {
+    this.unsub();
   }
 }
