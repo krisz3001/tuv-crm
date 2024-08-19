@@ -27,12 +27,13 @@ export const handleOfferUpdate = functions.firestore.document('offers/{offerId}'
 
 // Experts
 export const onUserRegister = functions.auth.user().onCreate(async (user, context) => {
-  functions.logger.info('User created', user);
-  await db.collection('experts').doc(user.uid).set({
-    name: 'Anonymous',
-    email: user.email,
-    firebaseId: user.uid,
-    createdAt: context.timestamp,
-    updatedAt: context.timestamp,
-  });
+  await db.collection('experts').doc(user.uid).set(
+    {
+      email: user.email,
+      firebaseId: user.uid,
+      createdAt: context.timestamp,
+      updatedAt: context.timestamp,
+    },
+    { merge: true },
+  );
 });
