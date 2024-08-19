@@ -32,7 +32,9 @@
     <textarea matInput cdkTextareaAutosize [(ngModel)]="offer.comment" name="comment"></textarea>
   </mat-form-field>
   <div class="btn-panel">
-    <button mat-raised-button color="primary" class="btn-generate" [disabled]="!offerState || !documentState">Dokumentum kiállítása</button>
+    <button mat-raised-button color="primary" class="btn-generate" [disabled]="!offerState || !documentState || (generationStage > 0 && generationStage < 100)">
+      Dokumentum kiállítása
+    </button>
     @if (generationStage === 100) {
       <button mat-raised-button color="primary" type="button" (click)="downloadOffer()"><mat-icon>download</mat-icon>Letöltés</button>
       <button mat-raised-button color="accent" type="button" (click)="goOfferDetails()"><mat-icon>open_in_new</mat-icon>Ajánlat megtekintése</button>

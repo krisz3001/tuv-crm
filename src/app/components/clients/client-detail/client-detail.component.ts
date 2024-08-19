@@ -83,7 +83,7 @@ export class ClientDetailComponent implements OnInit {
       .open(ConfirmationDialogComponent, {
         data: {
           title: 'Ügyfél törlése',
-          message: `Biztosan törölni szeretnéd a(z) ${this.client.company} ügyfelet?`,
+          message: `Biztosan törölni szeretnéd az ügyfelet?`,
           confirm: 'Törlés',
           confirmColor: 'warn',
         },
