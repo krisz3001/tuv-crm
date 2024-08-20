@@ -29,7 +29,6 @@ export class CertificatesBTIComponent implements OnInit, OnDestroy {
   unsub: Unsubscribe = () => {};
 
   ngOnInit(): void {
-    this.createCertificate();
     this.unsub = this.certificateService.getCertificatesRealtime((docs: QueryDocumentSnapshot[]) => {
       this.certificates = docs.map((doc) => doc.data() as CertificateBTI);
       this.isLoadingResults = false;
