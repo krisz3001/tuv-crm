@@ -10,9 +10,10 @@ import { OffersComponent } from './components/offers/offers.component';
 import { OfferDetailComponent } from './components/offers/offer-detail/offer-detail.component';
 import { PricesComponent } from './components/prices/prices.component';
 import { ContractsComponent } from './components/contracts/contracts.component';
-import { CertificatesComponent } from './components/certificates/certificates.component';
 import { ExpertsComponent } from './components/experts/experts.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
+import { CertificatesHEGComponent } from './components/certificates-heg/certificates-heg.component';
+import { CertificatesBTIComponent } from './components/certificates-bti/certificates-bti.component';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent, title: 'Kezdőlap', canActivate: [landingGuard] },
@@ -28,7 +29,8 @@ export const routes: Routes = [
       { path: 'offers/:id', component: OfferDetailComponent, title: 'Ajánlat részletek' },
       { path: 'prices', component: PricesComponent, title: 'Árlista' },
       { path: 'contracts', component: ContractsComponent, title: 'Szerződések' },
-      { path: 'certificates', component: CertificatesComponent, title: 'Tanúsítványok' },
+      { path: 'certificates-heg', component: CertificatesHEGComponent, title: 'Hegesztési osztály - Tanúsítványok' },
+      { path: 'certificates-bti', component: CertificatesBTIComponent, title: 'BTI osztály - Tanúsítványok' },
       { path: 'experts', component: ExpertsComponent, title: 'Szakértők' },
       { path: 'prices', component: PricesComponent, title: 'Árlista' },
       { path: 'statistics', component: StatisticsComponent, title: 'Statisztika' },

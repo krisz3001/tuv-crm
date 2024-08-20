@@ -1,0 +1,57 @@
+<div class="actions">
+  <button mat-raised-button aria-label="New client button" color="primary" (click)="createCertificate()">
+    <mat-icon>add</mat-icon>
+    Új tanúsítvány
+  </button>
+</div>
+@if (isLoadingResults) {
+  <div class="container-spinner">
+    <mat-spinner></mat-spinner>
+  </div>
+}
+@if (!isLoadingResults && certificates.length === 0) {
+  <p class="text-center" style="margin-left: 20px">A tanúsítványok listája üres</p>
+}
+@if (certificates.length > 0) {
+  <table mat-table [dataSource]="certificates">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>Tanúsítvány széma</th>
+      <td mat-cell *matCellDef="let certificate">{{ certificate.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="expiration">
+      <th mat-header-cell *matHeaderCellDef>Lejárat</th>
+      <td mat-cell *matCellDef="let certificate">
+        <app-expiration [date]="certificate.expiration" />
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Megnevezés</th>
+      <td mat-cell *matCellDef="let certificate">{{ certificate.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="dangerLevel">
+      <th mat-header-cell *matHeaderCellDef>Veszélyességi osztály</th>
+      <td mat-cell *matCellDef="let certificate">{{ certificate.dangerLevel }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="reportNumber">
+      <th mat-header-cell *matHeaderCellDef>Értékelő jegyzőkönyv száma</th>
+      <td mat-cell *matCellDef="let certificate">{{ certificate.reportNumber }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="operator">
+      <th mat-header-cell *matHeaderCellDef>Üzemeltető</th>
+      <td mat-cell *matCellDef="let certificate">{{ certificate.operator }}</td></ng-container
+    >
+
+    <ng-container matColumnDef="lastVisitDate">
+      <th mat-header-cell *matHeaderCellDef>Legutóbbi helyszíni ellenőrzés</th>
+      <td mat-cell *matCellDef="let certificate">{{ certificate.lastVisitDate | date: undefined : undefined : "hu" }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+}

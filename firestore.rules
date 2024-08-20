@@ -49,5 +49,9 @@ service cloud.firestore {
     match /experts/{expertId} {
       allow read, write: if isSignedIn();
     }
+
+    match /certificates-bti/{certificateId} {
+      allow read, write: if isSignedIn();
+    }
   }
 }

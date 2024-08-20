@@ -8,9 +8,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { ExpirationComponent } from '../ui/expiration/expiration.component';
-import { CertificateService } from '../../services/certificate.service';
+import { CertificateBTIService } from '../../services/certificate-bti.service';
 import { errorSnackbarConfig, successSnackbarConfig } from '../../../../helpers';
-import { Certificate } from '../../interfaces/certificate.interface';
+import { CertificateBTI } from '../../interfaces/certificate-bti.interface';
 import { Client } from '../../interfaces/client.interface';
 import { SubscriptionCollection } from '../../interfaces/subscription-collection.interface';
 
@@ -18,25 +18,26 @@ import { SubscriptionCollection } from '../../interfaces/subscription-collection
   selector: 'app-certificates',
   standalone: true,
   imports: [MatTableModule, MatButtonModule, MatIconModule, MatSortModule, MatProgressSpinnerModule, DatePipe, ExpirationComponent, DecimalPipe],
-  templateUrl: './certificates.component.html',
-  styleUrl: './certificates.component.css',
+  templateUrl: './certificates-heg.component.html',
+  styleUrl: './certificates-heg.component.css',
 })
-export class CertificatesComponent implements OnInit, OnDestroy {
+export class CertificatesHEGComponent implements OnInit, OnDestroy {
   constructor(
-    private certificateService: CertificateService,
+    private certificateService: CertificateBTIService,
     private snackBar: MatSnackBar,
   ) {}
 
   readonly dialog = inject(MatDialog);
   displayedColumns: string[] = ['id', 'ped', 'manufacturer', 'expiration', 'weldingDate', 'createdAt'];
-  certificates: Certificate[] = [];
+  certificates: CertificateBTI[] = [];
   isLoadingResults = true;
   @Input() client!: Client;
   @Input() mode: 'client' | 'all' = 'all';
   private subs: SubscriptionCollection = {};
 
   ngOnInit(): void {
-    if (this.mode === 'client') {
+    this.isLoadingResults = false;
+    /* if (this.mode === 'client') {
       this.certificateService.certificates.next(this.client.certificates);
       this.isLoadingResults = false;
     } else this.getAll();
@@ -49,11 +50,11 @@ export class CertificatesComponent implements OnInit, OnDestroy {
         this.snackBar.open(error.message, undefined, errorSnackbarConfig);
         this.isLoadingResults = false;
       },
-    });
+    }); */
   }
 
   getAll(): void {
-    this.isLoadingResults = true;
+    /* this.isLoadingResults = true;
     this.certificateService.getAll().subscribe({
       next: (certificates) => {
         this.certificates = certificates;
@@ -63,7 +64,7 @@ export class CertificatesComponent implements OnInit, OnDestroy {
         this.snackBar.open(error.message, undefined, errorSnackbarConfig);
         this.isLoadingResults = false;
       },
-    });
+    }); */
   }
 
   // temporary random certificate creation

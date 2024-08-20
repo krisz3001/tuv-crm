@@ -1,5 +1,5 @@
 import { QueryDocumentSnapshot, Timestamp } from '@angular/fire/firestore';
-import { Certificate } from './certificate.interface';
+import { CertificateBTI } from './certificate-bti.interface';
 import { Contract } from './contract.interface';
 import { Offer } from './offer.interface';
 
@@ -9,7 +9,7 @@ export interface Client {
   contact: string;
   offers: Offer[];
   contracts: Contract[];
-  certificates: Certificate[];
+  certificates: CertificateBTI[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

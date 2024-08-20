@@ -30,7 +30,7 @@
     <ng-container matColumnDef="expiration">
       <th mat-header-cell *matHeaderCellDef>Lejárat</th>
       <td mat-cell *matCellDef="let certificate" class="certificate-expired">
-        <app-expiration [expiration]="certificate.expiration"></app-expiration>
+        <app-expiration [date]="certificate.expiration"></app-expiration>
       </td>
     </ng-container>
 

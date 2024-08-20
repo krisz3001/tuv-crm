@@ -1,6 +1,6 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { provideAuth, getAuth, connectAuthEmulator } from '@angular/fire/auth';
 import { connectStorageEmulator, getStorage, provideStorage } from '@angular/fire/storage';
 
@@ -9,6 +9,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { connectFirestoreEmulator, getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { connectFunctionsEmulator, getFunctions, provideFunctions } from '@angular/fire/functions';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -35,6 +36,13 @@ export const appConfig: ApplicationConfig = {
         connectStorageEmulator(storage, 'localhost', 9199);
       }
       return storage;
+    }),
+    provideFunctions(() => {
+      const functions = getFunctions(getApp(), 'europe-west1');
+      if (!environment.production) {
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+      }
+      return functions;
     }),
     provideAnimationsAsync(),
   ],

@@ -1,6 +1,6 @@
 import { Document } from './document.interface';
 
-export interface Certificate extends Document {
+export interface CertificateHEG extends Document {
   name: string;
   expiration: string;
   ped: boolean;

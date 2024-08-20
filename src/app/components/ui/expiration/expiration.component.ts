@@ -10,13 +10,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrl: './expiration.component.css',
 })
 export class ExpirationComponent implements OnInit {
-  constructor() {}
-
-  @Input() expiration!: any;
-
-  now = new Date() as any;
+  @Input() date!: any;
+  expiration: any = new Date();
+  now: any = new Date();
 
   ngOnInit(): void {
-    this.expiration = new Date(this.expiration);
+    this.expiration = new Date(this.date);
   }
 }

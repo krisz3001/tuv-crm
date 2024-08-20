@@ -1,0 +1,67 @@
+@if (isParsing) {
+  <div class="container-spinner">
+    <mat-spinner />
+  </div>
+}
+<h2 mat-dialog-title>Új tanúsítvány</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (submit)="handleSubmit()" spellcheck="false">
+    <app-file-drag-and-drop accept=".docx" (fileChange)="handleFile($event)" />
+    <div class="grid">
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Tanúsítvány száma</mat-label>
+        <input matInput formControlName="id" name="id" />
+        @if (id.errors?.["required"]) {
+          <mat-error>Szám megadása kötelező</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Megnevezés</mat-label>
+        <input matInput formControlName="name" name="name" />
+        @if (name.errors?.["required"]) {
+          <mat-error>Megnevezés megadása kötelező</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Veszélyességi osztály</mat-label>
+        <input matInput formControlName="dangerLevel" name="dangerLevel" />
+        @if (dangerLevel.errors?.["required"]) {
+          <mat-error>Veszélyesség megadása kötelező</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Jegyzőkönyv száma</mat-label>
+        <input matInput formControlName="reportNumber" name="reportNumber" />
+        @if (reportNumber.errors?.["required"]) {
+          <mat-error>Szám megadása kötelező</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Üzemeltető</mat-label>
+        <input matInput formControlName="operator" name="operator" />
+        @if (operator.errors?.["required"]) {
+          <mat-error>Üzemeltető megadása kötelező</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Legutóbbi helyszíni ell.</mat-label>
+        <input matInput formControlName="lastVisitDate" name="lastVisitDate" />
+        @if (lastVisitDate.errors?.["required"]) {
+          <mat-error>Dátum megadása kötelező</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Lejárat</mat-label>
+        <input matInput formControlName="expiration" name="expiration" />
+        @if (expiration.errors?.["required"]) {
+          <mat-error>Dátum megadása kötelező</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="dialog-actions">
+      <button mat-raised-button color="primary" [disabled]="form.invalid">Hozzáadás</button>
+      <button mat-button [mat-dialog-close]="undefined">Mégsem</button>
+    </div>
+  </form>
+</mat-dialog-content>

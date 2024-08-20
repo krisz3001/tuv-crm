@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { createOffer } from './offers';
 import { handleDocumentUpdate } from './timestamps';
+import { handleParseCertificate } from './certificates';
 
 admin.initializeApp();
 export const db = admin.firestore();
@@ -12,7 +13,7 @@ export const db = admin.firestore();
 export const handleClientCreate = functions
   .region('europe-west1')
   .firestore.document('clients/{clientId}')
-  .onCreate(async (snap, context) => {
+  .onCreate(async (snap) => {
     await db.runTransaction(async (transaction) => {
       transaction.update(snap.ref, {
         firebaseId: snap.id,
@@ -43,3 +44,6 @@ export const onUserRegister = functions
       { merge: true },
     );
   });
+
+// Certificates
+export { handleParseCertificate };

@@ -1,9 +1,8 @@
 import { Component, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { DomSanitizer } from '@angular/platform-browser';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -28,12 +27,8 @@ import { StorageReference } from '@angular/fire/storage';
 export class OfferFilesComponent implements OnInit {
   constructor(
     private fileService: FileService,
-    private matIconRegistry: MatIconRegistry,
-    domSanitizer: DomSanitizer,
     private snackBar: MatSnackBar,
-  ) {
-    this.matIconRegistry.addSvgIcon('word', domSanitizer.bypassSecurityTrustResourceUrl('../../../../assets/icons/word.svg')); // TODO: add more icons
-  }
+  ) {}
 
   readonly dialog = inject(MatDialog);
   files: File[] = [];
